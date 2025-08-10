@@ -133,7 +133,22 @@ export const stripeWebhooks = async (request, response) => {
     }
     //Handle the event
     switch (event.type) {
-        //case "payment_intent.succeeded": {
+        
+
+        // case "checkout.session.completed": {
+        //     const session = event.data.object; // already the Checkout Session
+        //     const { orderId, userId } = session.metadata;
+
+        //     await Order.findByIdAndUpdate(orderId, {
+        //         isPaid: true,
+        //         paidAt: new Date()
+        //     });
+
+        //     await User.findByIdAndUpdate(userId, { cartItems: {} });
+        //     break;
+        // }
+
+
         case "checkout.session.completed": {
             const paymentIntent = event.data.object;
             const paymentIntentId = paymentIntent.id;
@@ -146,7 +161,7 @@ export const stripeWebhooks = async (request, response) => {
             const { orderId, userId } = session.data[0].metadata;
 
             //Mark payment as Paid
-            await Order.findByIdAndUpdate(orderId, { isPaid: true })
+            await Order.findByIdAndUpdate(orderId, { isPaid: true });
             //clear user cart
             await User.findByIdAndUpdate(userId, { cartItems: {} });
             break;
@@ -181,8 +196,8 @@ export const getUserOrders = async (req, res) => {
         const orders = await Order.find({
             userId,
             $or: [{ paymentType: "COD" },
-                { paymentType: "Online" },
-                { isPaid: true }]
+            { paymentType: "Online" },
+            { isPaid: true }]
         }).populate("items.product address").sort({ createdAt: -1 });
         res.json({ success: true, orders });
     } catch (error) {
