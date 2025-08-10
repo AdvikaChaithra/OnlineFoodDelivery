@@ -77,11 +77,23 @@ export const placeOrderStripe = async (req, res) => {
                     product_data: {
                         name: item.name,
                     },
-                    unit_amount: Math.floor(item.price + item.price * 0.02) * 100
+                    unit_amount: Math.floor(item.price * 100)
                 },
                 quantity: item.quantity,
             }
-        })
+        });
+
+        // Add the 2% fee separately as a line item
+        line_items.push({
+            price_data: {
+                currency: "usd",
+                product_data: {
+                    name: "Tax",
+                },
+                unit_amount: Math.round(amount * 0.02 * 100),
+            },
+            quantity: 1,
+        });
 
         //create session
         const session = await stripeInstance.checkout.sessions.create({
@@ -103,7 +115,7 @@ export const placeOrderStripe = async (req, res) => {
 
 
 // Stripe webhooks to verify payments Action : /stripe
-export const stripeWebhooks = async (requestAnimationFrame, response) => {
+export const stripeWebhooks = async (request, response) => {
     //Stripe Gateway Initialize
     const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -116,7 +128,7 @@ export const stripeWebhooks = async (requestAnimationFrame, response) => {
             process.env.STRIPE_WEBHOOK_SECRET
         );
     } catch (error) {
-        response.status(400).send(`Webhook Error: $(error.message)`)
+        response.status(400).send(`Webhook Error: ${error.message}`)
 
     }
     //Handle the event
@@ -138,7 +150,7 @@ export const stripeWebhooks = async (requestAnimationFrame, response) => {
             await User.findByIdAndUpdate(userId, { cartItems: {} });
             break;
         }
-        case "payment_intent.succeeded": {
+        case "payment_intent.payment_failed": {
             const paymentIntent = event.data.object;
             const paymentIntentId = paymentIntent.id;
 
@@ -156,7 +168,7 @@ export const stripeWebhooks = async (requestAnimationFrame, response) => {
             console.error(`Unhandled event type ${event.type}`)
             break;
     }
-    response.json({ received: true })
+    response.json({ received: true });
 }
 
 
@@ -167,7 +179,9 @@ export const getUserOrders = async (req, res) => {
         const userId = req.userId;
         const orders = await Order.find({
             userId,
-            $or: [{ paymentType: "COD" }, { isPaid: true }]
+            $or: [{ paymentType: "COD" },
+                { paymentType: "Online" },
+                { isPaid: true }]
         }).populate("items.product address").sort({ createdAt: -1 });
         res.json({ success: true, orders });
     } catch (error) {
