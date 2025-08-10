@@ -135,37 +135,37 @@ export const stripeWebhooks = async (request, response) => {
     switch (event.type) {
         
 
-        // case "checkout.session.completed": {
-        //     const session = event.data.object; // already the Checkout Session
-        //     const { orderId, userId } = session.metadata;
-
-        //     await Order.findByIdAndUpdate(orderId, {
-        //         isPaid: true,
-        //         paidAt: new Date()
-        //     });
-
-        //     await User.findByIdAndUpdate(userId, { cartItems: {} });
-        //     break;
-        // }
-
-
         case "checkout.session.completed": {
-            const paymentIntent = event.data.object;
-            const paymentIntentId = paymentIntent.id;
+            const session = event.data.object; // already the Checkout Session
+            const { orderId, userId } = session.metadata;
 
-            //Getting Session metadata
-            const session = await stripeInstance.checkout.sessions.list({
-                payment_intent: paymentIntentId,
+            await Order.findByIdAndUpdate(orderId, {
+                isPaid: true,
+                paidAt: new Date()
             });
 
-            const { orderId, userId } = session.data[0].metadata;
-
-            //Mark payment as Paid
-            await Order.findByIdAndUpdate(orderId, { isPaid: true });
-            //clear user cart
             await User.findByIdAndUpdate(userId, { cartItems: {} });
             break;
         }
+
+
+        // case "checkout.session.completed": {
+        //     const paymentIntent = event.data.object;
+        //     const paymentIntentId = paymentIntent.id;
+
+        //     //Getting Session metadata
+        //     const session = await stripeInstance.checkout.sessions.list({
+        //         payment_intent: paymentIntentId,
+        //     });
+
+        //     const { orderId, userId } = session.data[0].metadata;
+
+        //     //Mark payment as Paid
+        //     await Order.findByIdAndUpdate(orderId, { isPaid: true });
+        //     //clear user cart
+        //     await User.findByIdAndUpdate(userId, { cartItems: {} });
+        //     break;
+       // }
         case "payment_intent.payment_failed": {
             const paymentIntent = event.data.object;
             const paymentIntentId = paymentIntent.id;
