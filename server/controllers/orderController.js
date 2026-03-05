@@ -97,7 +97,7 @@ export const placeOrderStripe = async (req, res) => {
     // Add tax as separate item
     line_items.push({
       price_data: {
-        currency: "usd",
+        currency: "inr",
         product_data: {
           name: "Tax",
         },
