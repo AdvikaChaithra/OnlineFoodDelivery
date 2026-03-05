@@ -70,9 +70,11 @@ import vanilla_muffins_image from "./vanilla_muffins_image.png";
 import quinoa_image from "./quinoa_image.png";
 import brown_rice_image from "./brown_rice_image.png";
 import barley_image from "./barley_image.png";
+import fb_logo from "./fb_logo.png";
 
 export const assets = {
   logo,
+  fb_logo,
   new_logo,
   search_icon,
   remove_icon,
