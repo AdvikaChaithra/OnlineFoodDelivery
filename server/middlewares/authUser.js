@@ -1,3 +1,4 @@
+//server/middlewares/authUser.js
 import jwt from 'jsonwebtoken';
 
 const authUser = async (req, res, next) => {

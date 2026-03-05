@@ -1,3 +1,4 @@
+//client/src/context/AppContext.jsx
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { dummyProducts } from "../assets/assets";
@@ -39,7 +40,7 @@ export const AppContextProvider = ({ children }) => {
     //Fetch User Auth Status, user data and cart items
     const fetchUser = async () => {
         try {
-            const { data } = await axios.get('api/user/is-auth');
+            const { data } = await axios.get('/api/user/is-auth');
             if (data.success) {
                 setUser(data.user)
                 setCartItems(data.user.cartItems)
