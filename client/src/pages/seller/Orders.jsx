@@ -1,70 +1,159 @@
-import React, { useEffect, useState } from 'react'
-import { useAppContext } from '../../context/AppContext'
-import { assets, dummyAddress, dummyOrders } from '../../assets/assets'
-import toast from 'react-hot-toast'
+//client/src/pages/seller/Orders.jsx
+
+import React, { useEffect, useState } from "react";
+import { useAppContext } from "../../context/AppContext";
+import { assets } from "../../assets/assets";
+import toast from "react-hot-toast";
 
 const Orders = () => {
-    const { currency, axios} = useAppContext()
-    const [orders, setOrders] = useState([])
+  const { currency, axios } = useAppContext();
 
-    const fetchOrders = async () => {
-        try {
-            const { data } = await axios.get('/api/order/seller');
-            if (data.success) {
-                setOrders(data.orders)
-            } else {
-                toast.error(data.message)
-            }
-        } catch (error) {
-            toast.error(error.message)
-        }
-    };
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        fetchOrders();
+  /* ---------------- Fetch Orders ---------------- */
 
-    }, [])
+  const fetchOrders = async () => {
+    try {
+      const { data } = await axios.get("/api/order/seller");
 
+      if (data.success) {
+        setOrders(data.orders || []);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  /* ---------------- Loading ---------------- */
+
+  if (loading) {
     return (
-        <div className='no-scrollbar flex-1 h-[95vh] overflow-y-scroll'>
-            <div className="md:p-10 p-4 space-y-4">
-                <h2 className="text-lg font-medium">Orders List</h2>
-                {orders.map((order, index) => (
-                    <div key={index} className="flex flex-col md:items-center md:flex-row gap-5 justify-between p-5 max-w-4xl rounded-md border border-gray-300">
-                        <div className="flex gap-5 max-w-80">
-                            <img className="w-12 h-12 object-cover" src={assets.box_icon} alt="boxIcon" />
-                            <div>
-                                {order.items.map((item, index) => (
-                                    <div key={index} className="flex flex-col">
-                                        <p className="font-medium">
-                                            {item.product.name}{" "} <span className="text-primary">x {item.quantity}</span>
-                                        </p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+      <div className="flex items-center justify-center h-[80vh] text-gray-500">
+        Loading Orders...
+      </div>
+    );
+  }
 
-                        <div className="text-sm md:text-base text-black/60">
-                            <p className='text-black/80'>
-                                {order.address.firstName} {order.address.lastName}</p>
-                            <p>{order.address.street}, {order.address.city}</p>
-                            <p> {order.address.state}, {order.address.zipcode}, {order.address.country}</p>
-                            <p></p>
-                            <p>{order.address.phone}</p>
-                        </div>
+  /* ---------------- Empty Orders ---------------- */
 
-                        <p className="font-medium text-lg my-auto ">{currency}{order.amount}</p>
+  if (orders.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-[80vh] text-gray-500">
+        No Orders Found
+      </div>
+    );
+  }
 
-                        <div className="flex flex-col text-sm md:text-base text-black/60">
-                            <p>Method: {order.paymentType}</p>
-                            <p>Date: {new Date(order.createdAt).toLocaleDateString()}</p>
-                            <p>Payment: {order.isPaid ? "Paid" : "Pending"}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    )
-}
+  return (
+    <div className="no-scrollbar flex-1 h-[95vh] overflow-y-scroll">
+      <div className="md:p-10 p-4 space-y-6">
+        <h2 className="text-lg font-medium">Orders List</h2>
 
-export default Orders
+        {orders.map((order) => (
+          <div
+            key={order._id}
+            className="flex flex-col gap-6 p-5 max-w-5xl rounded-md border border-gray-300 bg-white"
+          >
+            {/* ---------------- Order Items ---------------- */}
+
+            {order.items?.map((item, index) => (
+              <div
+                key={index}
+                className="flex flex-col md:flex-row md:items-center gap-5 justify-between"
+              >
+                {/* Product */}
+
+                <div className="flex items-center gap-4 max-w-80">
+                  <img
+                    className="w-14 h-14 object-cover rounded border"
+                    src={item.product?.image?.[0] || assets.box_icon}
+                    alt={item.product?.name}
+                  />
+
+                  <div>
+                    <p className="font-medium text-gray-800">
+                      {item.product?.name || "Product Removed"}
+
+                      <span className="text-primary"> x {item.quantity}</span>
+                    </p>
+
+                    <p className="text-sm text-gray-500">
+                      Category: {item.product?.category || "N/A"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Address */}
+
+                <div className="text-sm md:text-base text-black/70">
+                  <p className="font-medium text-black">
+                    {order.address?.firstName} {order.address?.lastName}
+                  </p>
+
+                  <p>
+                    {order.address?.street}, {order.address?.city}
+                  </p>
+
+                  <p>
+                    {order.address?.state}, {order.address?.zipcode},{" "}
+                    {order.address?.country}
+                  </p>
+
+                  <p>{order.address?.phone}</p>
+                </div>
+
+                {/* Amount */}
+
+                <p className="font-semibold text-lg">
+                  {currency}
+                  {order.amount}
+                </p>
+
+                {/* Order Details */}
+
+                <div className="flex flex-col text-sm md:text-base text-black/70">
+                  <p>
+                    Method:
+                    <span className="font-medium"> {order.paymentType}</span>
+                  </p>
+
+                  <p>
+                    Date:{" "}
+                    {order.createdAt
+                      ? new Date(order.createdAt).toLocaleDateString()
+                      : "N/A"}
+                  </p>
+
+                  <p>
+                    Payment:
+                    <span
+                      className={
+                        order.isPaid
+                          ? "text-green-600 font-medium"
+                          : "text-red-500 font-medium"
+                      }
+                    >
+                      {" "}
+                      {order.isPaid ? "Paid" : "Pending"}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Orders;
