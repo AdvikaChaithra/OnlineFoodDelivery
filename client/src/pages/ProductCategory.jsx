@@ -1,3 +1,4 @@
+//client/src/pages/ProductCategory.jsx
 import React from 'react'
 import { useAppContext } from '../context/AppContext'
 import { useParams } from 'react-router-dom'

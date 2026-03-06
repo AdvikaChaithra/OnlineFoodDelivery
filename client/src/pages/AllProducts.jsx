@@ -1,3 +1,4 @@
+//client/src/pages/AllProducts.jsx
 import React, { useEffect, useState} from 'react'
 import { useAppContext } from '../context/AppContext'
 import ProductCard from '../components/ProductCard'

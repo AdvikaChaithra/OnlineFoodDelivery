@@ -1,3 +1,4 @@
+//client/src/pages/ProductDetails.jsx
 import { useEffect, useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import { Link, useParams } from "react-router-dom";
