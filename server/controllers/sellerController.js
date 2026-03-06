@@ -1,3 +1,4 @@
+//server/controllers/sellerController.js
 import jwt from 'jsonwebtoken';
 
 // Login Seller : /api/seller/login
@@ -5,7 +6,7 @@ import jwt from 'jsonwebtoken';
 export const sellerLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log("Received login credentials:", email, password);
+        console.log("Seller login attempt:", email);
 
         if (password === process.env.SELLER_PASSWORD && email === process.env.SELLER_EMAIL) {
             const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '7d' });
