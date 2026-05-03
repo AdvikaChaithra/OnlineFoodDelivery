@@ -1,3 +1,52 @@
-node_modules
+# ENV files
 .env
 .env.*
+client/.env
+client/.env.*
+server/.env
+server/.env.*
+
+# Node modules
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Build folders
+dist/
+client/dist/
+server/dist/
+build/
+
+# Logs
+*.log
+logs/
+
+# Temp
+*.tmp
+*.temp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+
+# Dependency locks (optional)
+# package-lock.json   (keep if you want reproducible builds)
+
+# Vercel
+.vercel
+
+.cache/
+.parcel-cache/
+.eslintcache
+
+# Coverage
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
