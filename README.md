@@ -33,7 +33,6 @@
 - [Deployment](#deployment)
 - [Contributing](#contributing)
 - [References and Acknowledgements](#references-and-acknowledgements)
-- [License](#license)
 - [Author](#author)
 
 ## Overview
@@ -569,10 +568,6 @@ For bugs, please open an issue with steps to reproduce, expected behaviour, and 
 - [Express](https://expressjs.com/), [Mongoose](https://mongoosejs.com/), [MongoDB Atlas](https://www.mongodb.com/atlas)
 - [Stripe Checkout and Webhooks](https://stripe.com/docs/payments/checkout), [Cloudinary](https://cloudinary.com/documentation), [Multer](https://github.com/expressjs/multer)
 - UI illustrations and product images come from the *GreenCart* asset pack included in `greencart_assets/`. Please verify the asset license before any commercial use.
-
-## License
-
-This project is released under the **MIT License**. Add a `LICENSE` file at the repository root to make this official.
 
 ## Author
 
