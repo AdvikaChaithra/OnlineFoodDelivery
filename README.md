@@ -649,14 +649,8 @@ Released under the **MIT License**.
 **Advika**
 
 - GitHub: [@AdvikaChaithra](https://github.com/AdvikaChaithra)
-<<<<<<< HEAD
+
 - Repository: [AdvikaChaithra/FoodBasket](https://github.com/AdvikaChaithra/FoodBasket)
 
-<div align="center">
 
-⭐ If you found this project helpful, consider giving it a star!
 
-</div>
-=======
-- Project Repository:[@OnlineFoodDelivery](https://github.com/AdvikaChaithra/OnlineFoodDelivery) 
->>>>>>> b6417d4e8ad9ce715c9daf355e7ac785d96f925b
