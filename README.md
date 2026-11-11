@@ -633,16 +633,9 @@ For bugs, open an issue with steps to reproduce, the expected behaviour and scre
 - [Lucide Icons](https://lucide.dev/) · [react-hot-toast](https://react-hot-toast.com/)
 - UI illustrations and product images come from the *GreenCart* asset pack in `greencart_assets/`. Check its license before commercial use.
 
----
-
-## 📄 License
-
-Released under the **MIT License**.
 
 ---
 
-## 👩‍💻 Author
-=======
 ## Author
 
 
