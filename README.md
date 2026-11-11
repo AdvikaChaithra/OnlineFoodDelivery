@@ -6,6 +6,7 @@
 
 A full-stack **MERN** e-commerce web app where customers browse fresh groceries, build a cart that follows them across devices, and pay with **Cash on Delivery** or **Stripe**. A separate **seller dashboard** manages the catalogue, stock and incoming orders.
 
+<<<<<<< HEAD
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
@@ -15,6 +16,30 @@ A full-stack **MERN** e-commerce web app where customers browse fresh groceries,
 [![Stripe](https://img.shields.io/badge/Payments-Stripe-635BFF?logo=stripe&logoColor=white)](https://stripe.com/)
 [![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?logo=vercel&logoColor=white)](https://vercel.com/)
 [![License](https://img.shields.io/badge/License-MIT-green)](#-license)
+=======
+- [Overview](#overview)
+- [Problem Statement](#problem-statement)
+- [Objectives](#objectives)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [System Architecture](#system-architecture)
+- [Screenshots and Demo](#screenshots-and-demo)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Installation and Setup](#installation-and-setup)
+- [Usage](#usage)
+- [API Documentation](#api-documentation)
+- [Data Models](#data-models)
+- [Testing and Results](#testing-and-results)
+- [Challenges and Solutions](#challenges-and-solutions)
+- [Limitations](#limitations)
+- [Future Enhancements](#future-enhancements)
+- [Security](#security)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [References and Acknowledgements](#references-and-acknowledgements)
+- [Author](#author)
+>>>>>>> b6417d4e8ad9ce715c9daf355e7ac785d96f925b
 
 **[Features](#-features) · [Tech Stack](#-tech-stack) · [Getting Started](#-getting-started) · [API](#-api-reference) · [Deployment](#-deployment) · [Learning Guide](learning.md)**
 
@@ -601,6 +626,7 @@ For bugs, open an issue with steps to reproduce, the expected behaviour and scre
 
 ## 🙏 Acknowledgements
 
+<<<<<<< HEAD
 - [React](https://react.dev/) · [Vite](https://vite.dev/) · [React Router](https://reactrouter.com/) · [Tailwind CSS](https://tailwindcss.com/)
 - [Express](https://expressjs.com/) · [Mongoose](https://mongoosejs.com/) · [MongoDB Atlas](https://www.mongodb.com/atlas)
 - [Stripe Checkout and Webhooks](https://stripe.com/docs/payments/checkout) · [Cloudinary](https://cloudinary.com/documentation) · [Multer](https://github.com/expressjs/multer)
@@ -616,10 +642,14 @@ Released under the **MIT License**.
 ---
 
 ## 👩‍💻 Author
+=======
+## Author
+>>>>>>> b6417d4e8ad9ce715c9daf355e7ac785d96f925b
 
 **Advika**
 
 - GitHub: [@AdvikaChaithra](https://github.com/AdvikaChaithra)
+<<<<<<< HEAD
 - Repository: [AdvikaChaithra/FoodBasket](https://github.com/AdvikaChaithra/FoodBasket)
 
 <div align="center">
@@ -627,3 +657,6 @@ Released under the **MIT License**.
 ⭐ If you found this project helpful, consider giving it a star!
 
 </div>
+=======
+- Project Repository:[@OnlineFoodDelivery](https://github.com/AdvikaChaithra/OnlineFoodDelivery) 
+>>>>>>> b6417d4e8ad9ce715c9daf355e7ac785d96f925b
