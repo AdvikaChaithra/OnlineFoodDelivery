@@ -9,10 +9,13 @@ const SellerLogin = () => {
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [loading, setLoading] = useState(false)
 
     const onSubmitHandler = async (event) => {
+        event.preventDefault()
+        if (loading) return
+        setLoading(true)
         try {
-            event.preventDefault()
 
             const { data } = await axios.post('/api/seller/login', { email, password })
 
@@ -24,7 +27,9 @@ const SellerLogin = () => {
             }
 
         } catch (error) {
-            toast.error(error.message)
+            toast.error(error.message, { id: "seller-login-error" })
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -32,6 +37,7 @@ const SellerLogin = () => {
         if (isSeller) {
             navigate("/seller")
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isSeller])
 
     return !isSeller && (
@@ -66,8 +72,8 @@ const SellerLogin = () => {
                     />
                 </div>
 
-                <button className='bg-primary text-white w-full py-2 rounded-md cursor-pointer'>
-                    Login
+                <button disabled={loading} className='bg-primary text-white w-full py-2 rounded-md cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed'>
+                    {loading ? "Please wait..." : "Login"}
                 </button>
 
             </div>

@@ -6,7 +6,7 @@ import { useAppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
 
 const SellerLayout = () => {
-  const { axios, navigate } = useAppContext();
+  const { axios, navigate, setIsSeller } = useAppContext();
 
   const sidebarLinks = [
     { name: "Add Product", path: "/seller", icon: assets.add_icon },
@@ -24,6 +24,7 @@ const SellerLayout = () => {
 
       if (data.success) {
         toast.success(data.message);
+        setIsSeller(false);
         navigate("/");
       } else {
         toast.error(data.message);

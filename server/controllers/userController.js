@@ -1,15 +1,26 @@
 import User from "../models/User.js";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import authUser from "../middlewares/authUser.js";
+import { cookieOptions, COOKIE_MAX_AGE } from "../configs/cookie.js";
+
+const setAuthCookie = (res, userId) => {
+    const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
+    res.cookie('token', token, { ...cookieOptions(), maxAge: COOKIE_MAX_AGE });
+}
 
 // Register User : /api/user/register
 export const register = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const name = req.body.name?.trim();
+        const email = req.body.email?.trim();
+        const { password } = req.body;
 
         if (!name || !email || !password) {
             return res.json({ success: false, message: 'Missing Details' })
+        }
+
+        if (password.length < 6) {
+            return res.json({ success: false, message: 'Password must be at least 6 characters' })
         }
 
         const existingUser = await User.findOne({ email })
@@ -21,16 +32,9 @@ export const register = async (req, res) => {
 
         const user = await User.create({ name, email, password: hashedPassword })
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        setAuthCookie(res, user._id);
 
-        res.cookie('token', token, {
-            httpOnly: true, //Prevent Javascript to access cookie
-            secure: process.env.NODE_ENV === 'production', //Use secure cookies in production
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict', //CSRF protection
-            maxAge: 7 * 24 * 60 * 60 * 1000, //Cookie expiration time
-        })
-
-        return res.json({ success: true, user: { email: user.email, name: user.name } })
+        return res.json({ success: true, user: { _id: user._id, email: user.email, name: user.name, cartItems: user.cartItems } })
 
     } catch (error) {
         console.log(error.message);
@@ -43,7 +47,8 @@ export const register = async (req, res) => {
 // Login USer : /api/user/login
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const email = req.body.email?.trim();
+        const { password } = req.body;
 
         if (!email || !password)
             return res.json({ success: false, message: 'Email and Password are required' });
@@ -58,16 +63,9 @@ export const login = async (req, res) => {
         if (!isMatch)
             return res.json({ success: false, message: 'Invalid email or password' });
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        setAuthCookie(res, user._id);
 
-        res.cookie('token', token, {
-            httpOnly: true, 
-            secure: process.env.NODE_ENV === 'production', 
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict', 
-            maxAge: 7 * 24 * 60 * 60 * 1000, 
-        })
-
-        return res.json({ success: true, user: { email: user.email, name: user.name } })
+        return res.json({ success: true, user: { _id: user._id, email: user.email, name: user.name, cartItems: user.cartItems } })
 
     } catch (error) {
         console.log(error.message);
@@ -80,8 +78,11 @@ export const login = async (req, res) => {
 // Check Auth : /api/user/is-auth
 export const isAuth = async (req, res) => {
     try {
-        const userId  = req.userId;
+        const userId = req.userId;
         const user = await User.findById(userId).select("-password")
+        if (!user) {
+            return res.json({ success: false, message: 'Not Authorized' })
+        }
         return res.json({ success: true, user })
 
     } catch (error) {
@@ -94,15 +95,10 @@ export const isAuth = async (req, res) => {
 // Logout User : /api/user/logout
 export const logout = async (req, res) => {
     try {
-        res.clearCookie('token', {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-        });
+        res.clearCookie('token', cookieOptions());
         return res.json({ success: true, message: "Logged Out" })
     } catch (error) {
         console.log(error.message);
         res.json({ success: false, message: error.message });
     }
 }
-

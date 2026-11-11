@@ -7,14 +7,15 @@ import toast from 'react-hot-toast'
 
 const Navbar = () => {
     const [open, setOpen] = React.useState(false)
-    const { user, setUser, setShowUserLogin, navigate, setSearchQuery, searchQuery, getCartCount, axios } = useAppContext();
+    const { user, logoutUser, setShowUserLogin, navigate, setSearchQuery, searchQuery, getCartCount, axios } = useAppContext();
 
     const logout = async () => {
         try {
             const { data } = await axios.get('/api/user/logout')
             if (data.success) {
                 toast.success(data.message)
-                setUser(null);
+                logoutUser();
+                setOpen(false);
                 navigate('/')
 
             }else{
@@ -31,6 +32,7 @@ const Navbar = () => {
         if (searchQuery.length > 0) {
             navigate("/products")
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchQuery])
 
 
@@ -51,7 +53,7 @@ const Navbar = () => {
                 <NavLink to='/'>Contact</NavLink>
 
                 <div className="hidden lg:flex items-center text-sm gap-2 border border-gray-300 px-3 rounded-full">
-                    <input onChange={(e) => setSearchQuery(e.target.value)} className="py-1.5 w-full bg-transparent outline-none placeholder-gray-500" type="text" placeholder="Search products" />
+                    <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="py-1.5 w-full bg-transparent outline-none placeholder-gray-500" type="text" placeholder="Search products" />
                     <img src={assets.search_icon} alt='search' className='w-4 h-4' />
                 </div>
 
@@ -66,10 +68,10 @@ const Navbar = () => {
                     :
                     (
                         <div className='relative group'>
-                            <img src={assets.profile_icon} className='w-10' alt="" />
-                            <ul className='hidden group-hover:block absolute top-10 right-0 bg-white shadow border borer-grey-200 py-2.5 w-30 rounded-md text-sm z-40'>
-                                <li onClick={() => navigate("my-orders")} className='p--1.5 pl-3 hover:bg-primary/10 cursor-pointer'>My Orders</li>
-                                <li onClick={logout} className='p--1.5 pl-3 hover:bg-primary/10 cursor-pointer'>Logout</li>
+                            <img src={assets.profile_icon} className='w-10 cursor-pointer' alt="profile" />
+                            <ul className='hidden group-hover:block absolute top-10 right-0 bg-white shadow border border-gray-200 py-2.5 w-30 rounded-md text-sm z-40'>
+                                <li onClick={() => navigate("/my-orders")} className='py-1.5 pl-3 hover:bg-primary/10 cursor-pointer'>My Orders</li>
+                                <li onClick={logout} className='py-1.5 pl-3 hover:bg-primary/10 cursor-pointer'>Logout</li>
                             </ul>
                         </div>
                     )}
@@ -94,7 +96,7 @@ const Navbar = () => {
                     <NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink>
                     <NavLink to="/products" onClick={() => setOpen(false)}>All Products</NavLink>
                     {user &&
-                        <NavLink to="/products" onClick={() => setOpen(false)}>My Orders</NavLink>
+                        <NavLink to="/my-orders" onClick={() => setOpen(false)}>My Orders</NavLink>
                     }
                     <NavLink to="/" onClick={() => setOpen(false)}>Contact</NavLink>
 

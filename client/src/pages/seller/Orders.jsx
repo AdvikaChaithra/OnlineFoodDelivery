@@ -31,6 +31,7 @@ const Orders = () => {
 
   useEffect(() => {
     fetchOrders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /* ---------------- Loading ---------------- */
@@ -63,92 +64,91 @@ const Orders = () => {
             key={order._id}
             className="flex flex-col gap-6 p-5 max-w-5xl rounded-md border border-gray-300 bg-white"
           >
-            {/* ---------------- Order Items ---------------- */}
+            <div className="flex flex-col md:flex-row md:items-start gap-5 justify-between">
+              {/* ---------------- Order Items ---------------- */}
 
-            {order.items?.map((item, index) => (
-              <div
-                key={index}
-                className="flex flex-col md:flex-row md:items-center gap-5 justify-between"
-              >
-                {/* Product */}
+              <div className="flex flex-col gap-4 max-w-80">
+                {order.items?.map((item, index) => (
+                  <div key={index} className="flex items-center gap-4">
+                    <img
+                      className="w-14 h-14 object-cover rounded border"
+                      src={item.product?.image?.[0] || assets.box_icon}
+                      alt={item.product?.name || "product"}
+                    />
 
-                <div className="flex items-center gap-4 max-w-80">
-                  <img
-                    className="w-14 h-14 object-cover rounded border"
-                    src={item.product?.image?.[0] || assets.box_icon}
-                    alt={item.product?.name}
-                  />
+                    <div>
+                      <p className="font-medium text-gray-800">
+                        {item.product?.name || "Product Removed"}
+                        <span className="text-primary"> x {item.quantity}</span>
+                      </p>
 
-                  <div>
-                    <p className="font-medium text-gray-800">
-                      {item.product?.name || "Product Removed"}
-
-                      <span className="text-primary"> x {item.quantity}</span>
-                    </p>
-
-                    <p className="text-sm text-gray-500">
-                      Category: {item.product?.category || "N/A"}
-                    </p>
+                      <p className="text-sm text-gray-500">
+                        Category: {item.product?.category || "N/A"}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                ))}
+              </div>
 
-                {/* Address */}
+              {/* Address */}
 
-                <div className="text-sm md:text-base text-black/70">
-                  <p className="font-medium text-black">
-                    {order.address?.firstName} {order.address?.lastName}
-                  </p>
+              <div className="text-sm md:text-base text-black/70">
+                {order.address ? (
+                  <>
+                    <p className="font-medium text-black">
+                      {order.address.firstName} {order.address.lastName}
+                    </p>
+                    <p>
+                      {order.address.street}, {order.address.city}
+                    </p>
+                    <p>
+                      {order.address.state}, {order.address.zipcode},{" "}
+                      {order.address.country}
+                    </p>
+                    <p>{order.address.phone}</p>
+                  </>
+                ) : (
+                  <p>Address unavailable</p>
+                )}
+              </div>
 
-                  <p>
-                    {order.address?.street}, {order.address?.city}
-                  </p>
+              {/* Amount */}
 
-                  <p>
-                    {order.address?.state}, {order.address?.zipcode},{" "}
-                    {order.address?.country}
-                  </p>
+              <p className="font-semibold text-lg">
+                {currency}
+                {order.amount}
+              </p>
 
-                  <p>{order.address?.phone}</p>
-                </div>
+              {/* Order Details */}
 
-                {/* Amount */}
-
-                <p className="font-semibold text-lg">
-                  {currency}
-                  {order.amount}
+              <div className="flex flex-col text-sm md:text-base text-black/70">
+                <p>
+                  Method:
+                  <span className="font-medium"> {order.paymentType}</span>
                 </p>
 
-                {/* Order Details */}
+                <p>
+                  Date:{" "}
+                  {order.createdAt
+                    ? new Date(order.createdAt).toLocaleDateString()
+                    : "N/A"}
+                </p>
 
-                <div className="flex flex-col text-sm md:text-base text-black/70">
-                  <p>
-                    Method:
-                    <span className="font-medium"> {order.paymentType}</span>
-                  </p>
-
-                  <p>
-                    Date:{" "}
-                    {order.createdAt
-                      ? new Date(order.createdAt).toLocaleDateString()
-                      : "N/A"}
-                  </p>
-
-                  <p>
-                    Payment:
-                    <span
-                      className={
-                        order.isPaid
-                          ? "text-green-600 font-medium"
-                          : "text-red-500 font-medium"
-                      }
-                    >
-                      {" "}
-                      {order.isPaid ? "Paid" : "Pending"}
-                    </span>
-                  </p>
-                </div>
+                <p>
+                  Payment:
+                  <span
+                    className={
+                      order.isPaid
+                        ? "text-green-600 font-medium"
+                        : "text-red-500 font-medium"
+                    }
+                  >
+                    {" "}
+                    {order.isPaid ? "Paid" : "Pending"}
+                  </span>
+                </p>
               </div>
-            ))}
+            </div>
           </div>
         ))}
       </div>

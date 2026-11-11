@@ -1,6 +1,7 @@
 //client/src/context/AppContext.jsx
+/* eslint-disable react-refresh/only-export-components */
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -8,15 +9,29 @@ import axios from "axios";
 axios.defaults.withCredentials = true;
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
+// When the server answers with an error status (e.g. 503 "Database is
+// unavailable"), show its message instead of axios' generic
+// "Request failed with status code ...".
+axios.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const serverMessage = error.response?.data?.message;
+        if (serverMessage) error.message = serverMessage;
+        else if (!error.response) error.message = "Cannot reach the server. Please check your connection.";
+        return Promise.reject(error);
+    }
+);
+
 export const AppContext = createContext();
 
 export const AppContextProvider = ({ children }) => {
 
-    const currency = import.meta.env.VITE_CURRENCY;
+    const currency = import.meta.env.VITE_CURRENCY || "₹";
 
     const navigate = useNavigate();
 
     const [user, setUser] = useState(null);
+    const [isUserLoading, setIsUserLoading] = useState(true);
     const [isSeller, setIsSeller] = useState(false);
     const [showUserLogin, setShowUserLogin] = useState(false);
     const [products, setProducts] = useState([]);
@@ -24,18 +39,16 @@ export const AppContextProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState({});
     const [searchQuery, setSearchQuery] = useState("");
 
+    // Set when the cart was loaded from the server, so we don't
+    // immediately echo the same cart back to the backend.
+    const skipNextSync = useRef(false);
+
     /* ---------------- Seller Auth ---------------- */
 
     const fetchSeller = async () => {
         try {
             const { data } = await axios.get("/api/seller/is-auth");
-
-            if (data.success) {
-                setIsSeller(true);
-            } else {
-                setIsSeller(false);
-            }
-
+            setIsSeller(Boolean(data.success));
         } catch {
             setIsSeller(false);
         }
@@ -45,17 +58,43 @@ export const AppContextProvider = ({ children }) => {
 
     const fetchUser = async () => {
         try {
-
             const { data } = await axios.get("/api/user/is-auth");
 
             if (data.success) {
+                skipNextSync.current = true;
                 setUser(data.user);
                 setCartItems(data.user.cartItems || {});
+            } else {
+                setUser(null);
             }
 
         } catch {
             setUser(null);
+        } finally {
+            setIsUserLoading(false);
         }
+    };
+
+    /* ---------------- Login / Logout helpers ---------------- */
+
+    // Called after a successful login/register: merge the guest cart
+    // (items added before logging in) with the cart saved on the server.
+    const loginUser = (loggedInUser) => {
+        const serverCart = loggedInUser.cartItems || {};
+        const merged = { ...serverCart };
+
+        for (const id in cartItems) {
+            merged[id] = Math.max(merged[id] || 0, cartItems[id]);
+        }
+
+        setUser(loggedInUser);
+        setCartItems(merged);
+    };
+
+    const logoutUser = () => {
+        skipNextSync.current = true;
+        setUser(null);
+        setCartItems({});
     };
 
     /* ---------------- Products ---------------- */
@@ -68,11 +107,11 @@ export const AppContextProvider = ({ children }) => {
             if (data.success) {
                 setProducts(data.products);
             } else {
-                toast.error(data.message);
+                toast.error(data.message, { id: "products-error" });
             }
 
         } catch (error) {
-            toast.error(error.message);
+            toast.error(error.message, { id: "products-error" });
         }
     };
 
@@ -103,11 +142,15 @@ export const AppContextProvider = ({ children }) => {
 
         const cartData = structuredClone(cartItems);
 
-        cartData[itemId] = quantity;
+        if (quantity > 0) {
+            cartData[itemId] = quantity;
+        } else {
+            delete cartData[itemId];
+        }
 
         setCartItems(cartData);
 
-        toast.success("Cart Updated", {
+        toast.success(quantity > 0 ? "Cart Updated" : "Removed from Cart", {
             id: "cart-toast",
             duration: 1500,
             position: "top-center",
@@ -124,7 +167,7 @@ export const AppContextProvider = ({ children }) => {
 
             cartData[itemId] -= 1;
 
-            if (cartData[itemId] === 0) {
+            if (cartData[itemId] <= 0) {
                 delete cartData[itemId];
             }
         }
@@ -168,7 +211,7 @@ export const AppContextProvider = ({ children }) => {
             }
         }
 
-        return Math.floor(totalAmount * 100) / 100;
+        return Math.round(totalAmount * 100) / 100;
     };
 
     /* ---------------- Initial Load ---------------- */
@@ -181,9 +224,33 @@ export const AppContextProvider = ({ children }) => {
 
     }, []);
 
+    /* ---------------- Drop deleted products from the cart ---------------- */
+
+    useEffect(() => {
+        if (products.length === 0) return;
+
+        const ids = new Set(products.map((p) => p._id));
+        const stale = Object.keys(cartItems).filter((id) => !ids.has(id));
+
+        if (stale.length > 0) {
+            setCartItems((prev) => {
+                const next = { ...prev };
+                stale.forEach((id) => delete next[id]);
+                return next;
+            });
+        }
+    }, [products, cartItems]);
+
     /* ---------------- Sync Cart To Backend ---------------- */
 
     useEffect(() => {
+
+        if (skipNextSync.current) {
+            skipNextSync.current = false;
+            return;
+        }
+
+        if (!user) return;
 
         const updateCart = async () => {
 
@@ -194,19 +261,17 @@ export const AppContextProvider = ({ children }) => {
                 });
 
                 if (!data.success) {
-                    toast.error(data.message);
+                    toast.error(data.message, { id: "cart-sync-error" });
                 }
 
             } catch (error) {
-                toast.error(error.message);
+                toast.error(error.message, { id: "cart-sync-error" });
             }
         };
 
-        if (user) {
-            updateCart();
-        }
+        updateCart();
 
-    }, [cartItems]);
+    }, [cartItems, user]);
 
     /* ---------------- Context Value ---------------- */
 
@@ -214,6 +279,9 @@ export const AppContextProvider = ({ children }) => {
         navigate,
         user,
         setUser,
+        isUserLoading,
+        loginUser,
+        logoutUser,
         isSeller,
         setIsSeller,
         showUserLogin,

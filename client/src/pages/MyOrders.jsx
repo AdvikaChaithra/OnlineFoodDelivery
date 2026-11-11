@@ -7,7 +7,7 @@ import { assets } from "../assets/assets";
 const MyOrders = () => {
   const [myOrders, setMyOrders] = useState([]);
 
-  const { currency, axios, user } = useAppContext();
+  const { currency, axios, user, isUserLoading, setShowUserLogin } = useAppContext();
 
   /* ---------------- Fetch Orders ---------------- */
 
@@ -26,7 +26,10 @@ const MyOrders = () => {
   useEffect(() => {
     if (user) {
       fetchMyOrders();
+    } else {
+      setMyOrders([]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   return (
@@ -41,7 +44,17 @@ const MyOrders = () => {
 
       {/* No Orders */}
 
-      {myOrders.length === 0 && (
+      {!isUserLoading && !user && (
+        <p className="text-gray-500">
+          Please{" "}
+          <span onClick={() => setShowUserLogin(true)} className="text-primary cursor-pointer underline">
+            login
+          </span>{" "}
+          to see your orders.
+        </p>
+      )}
+
+      {user && myOrders.length === 0 && (
         <p className="text-gray-500">No orders found</p>
       )}
 
@@ -57,7 +70,12 @@ const MyOrders = () => {
           <p className="flex justify-between md:items-center text-gray-400 md:font-medium max-md:flex-col">
             <span>OrderId : {order._id}</span>
 
-            <span>Payment : {order.paymentType}</span>
+            <span>
+              Payment : {order.paymentType}{" "}
+              <span className={order.isPaid ? "text-green-600" : "text-orange-500"}>
+                ({order.isPaid ? "Paid" : "Pending"})
+              </span>
+            </span>
 
             <span>
               Total Amount : {currency}

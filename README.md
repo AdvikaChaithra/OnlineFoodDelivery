@@ -1,243 +1,269 @@
-# FoodBasket — Online Food & Grocery Delivery Platform
+<div align="center">
 
-> A full-stack MERN e-commerce web app where customers browse fresh food and grocery products, build a cart, and pay by Cash on Delivery or Stripe, while a seller/admin dashboard manages the catalogue and incoming orders.
+# 🧺 FoodBasket
 
-[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)]()
-[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)]()
-[![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)]()
-[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?logo=mongodb&logoColor=white)]()
-[![Stripe](https://img.shields.io/badge/Payments-Stripe-635BFF?logo=stripe&logoColor=white)]()
-[![Status](https://img.shields.io/badge/Status-In%20Development-orange)]()
-[![License](https://img.shields.io/badge/License-MIT-green)]()
+### Online Food & Grocery Delivery Platform
 
-## Table of Contents
+A full-stack **MERN** e-commerce web app where customers browse fresh groceries, build a cart that follows them across devices, and pay with **Cash on Delivery** or **Stripe**. A separate **seller dashboard** manages the catalogue, stock and incoming orders.
 
-- [Overview](#overview)
-- [Problem Statement](#problem-statement)
-- [Objectives](#objectives)
-- [Features](#features)
-- [Technology Stack](#technology-stack)
-- [System Architecture](#system-architecture)
-- [Screenshots and Demo](#screenshots-and-demo)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Installation and Setup](#installation-and-setup)
-- [Usage](#usage)
-- [API Documentation](#api-documentation)
-- [Data Models](#data-models)
-- [Testing and Results](#testing-and-results)
-- [Challenges and Solutions](#challenges-and-solutions)
-- [Limitations](#limitations)
-- [Future Enhancements](#future-enhancements)
-- [Security](#security)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
-- [References and Acknowledgements](#references-and-acknowledgements)
-- [License](#license)
-- [Author](#author)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
+[![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose%208-47A248?logo=mongodb&logoColor=white)](https://mongoosejs.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Stripe](https://img.shields.io/badge/Payments-Stripe-635BFF?logo=stripe&logoColor=white)](https://stripe.com/)
+[![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?logo=vercel&logoColor=white)](https://vercel.com/)
+[![License](https://img.shields.io/badge/License-MIT-green)](#-license)
 
-## Overview
+**[Features](#-features) · [Tech Stack](#-tech-stack) · [Getting Started](#-getting-started) · [API](#-api-reference) · [Deployment](#-deployment) · [Learning Guide](learning.md)**
 
-**FoodBasket** is a single-page, full-stack web application for ordering food and grocery items online. It is built on the MERN stack (MongoDB, Express, React, Node.js) and has two user roles:
+</div>
 
-- **Customers** can browse products by category, search by name, view product details, manage a persistent cart, save delivery addresses, place orders (Cash on Delivery or online card payment via Stripe), and view their order history.
-- **Seller / Admin** can log in to a separate dashboard to add products with images, toggle stock availability, delete products, and view all customer orders.
+---
 
-The project is intended as a realistic, end-to-end example of an e-commerce workflow: authentication with HTTP-only cookies, role-based route protection, image uploads to a cloud CDN, server-side price calculation, and payment confirmation through Stripe webhooks.
+## 📑 Table of Contents
 
-Products are organised into seven categories: **Vegetables, Fruits, Drinks, Instant Food, Dairy, Bakery, and Grains**.
+- [Overview](#-overview)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Architecture](#-architecture)
+- [How It Works](#-how-it-works)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [Usage](#-usage)
+- [Frontend Routes](#-frontend-routes)
+- [API Reference](#-api-reference)
+- [Data Models](#-data-models)
+- [Security](#-security)
+- [Deployment](#-deployment)
+- [Testing Checklist](#-testing-checklist)
+- [Challenges and Solutions](#-challenges-and-solutions)
+- [Roadmap](#-roadmap)
+- [Contributing](#-contributing)
+- [Acknowledgements](#-acknowledgements)
+- [License](#-license)
+- [Author](#-author)
 
-## Problem Statement
+> 📘 **New to the codebase?** Read [`learning.md`](learning.md). It explains every file, the reasoning behind each technology, a 7-day build walkthrough and 20 interview questions with answers.
 
-Small food and grocery sellers often lack an affordable way to sell online, and customers want a simple experience: find items quickly, see accurate prices, pay securely, and track what they ordered. Manual or phone-based ordering causes mistakes in pricing and stock, offers no order history, and does not scale.
+---
 
-FoodBasket addresses this by giving sellers a lightweight admin panel for catalogue and order management, and giving customers a fast storefront with a cart that follows them across sessions and devices.
+## 🌟 Overview
 
-## Objectives
+**FoodBasket** is a single-page, full-stack web application for ordering food and groceries online. It has two roles:
 
-- Build a responsive storefront with category browsing, search, and product detail pages.
-- Implement secure customer and seller authentication using JWT stored in HTTP-only cookies.
-- Persist each customer's cart in the database so it survives logout and device changes.
-- Support two payment flows: Cash on Delivery and Stripe Checkout with webhook-based confirmation.
-- Calculate order totals on the server from database prices so the client cannot tamper with amounts.
-- Provide a seller dashboard for product, stock, and order management with Cloudinary-hosted images.
-- Keep the codebase deployable to Vercel (frontend and backend).
+| Role | Capabilities |
+|---|---|
+| 🛒 **Customer** | Browse by category, search, view product details, manage a persistent cart, save delivery addresses, pay by COD or card (Stripe), and track order history. |
+| 🏪 **Seller (Admin)** | Log in to a separate dashboard to add products with images, toggle stock, delete products, and view every order with the delivery address and payment status. |
 
-## Features
+Products are organised into seven categories: **Vegetables · Fruits · Drinks · Instant · Dairy · Bakery · Grains**.
 
-### Customer
+### Why this project?
+Small grocery sellers often lack an affordable way to sell online, and phone or manual ordering leads to pricing mistakes, no order history and no scalability. FoodBasket gives sellers a lightweight admin panel and customers a fast storefront. It also demonstrates a realistic, end-to-end e-commerce workflow:
 
-- **Registration and login:** Email and password accounts, passwords hashed with bcrypt, session kept in a 7-day HTTP-only cookie.
-- **Product browsing:** Home page with banners, category tiles, and best sellers; "All Products" page; per-category pages.
-- **Live search:** Search box filters products by name.
-- **Product details:** Image gallery, MRP versus offer price, description bullets, related products from the same category, "Add to Cart" and "Buy now".
-- **Smart cart:** Quantity selector, item removal, running totals, and automatic sync to the backend whenever the cart changes (for logged-in users).
-- **Address book:** Save multiple delivery addresses and pick one at checkout.
-- **Two payment options:**
-  - *Cash on Delivery:* order created immediately.
-  - *Online (Stripe Checkout, INR):* redirected to Stripe; order is marked paid only after Stripe confirms through a signed webhook.
-- **Order history:** "My Orders" lists past orders with items, payment type, amount, status, and date.
-- **Toast notifications:** Instant feedback for cart actions, errors, and order results.
+- 🔐 Cookie-based JWT authentication with separate customer and seller sessions
+- 💰 Prices calculated on the server, so the client can't tamper with totals
+- 💳 Stripe Checkout with signed webhooks for payment confirmation
+- ☁️ Image uploads to the Cloudinary CDN
+- 🚀 Serverless deployment of both apps on Vercel
 
-### Seller / Admin
+---
 
-- **Separate login:** Credentials are configured through environment variables; authenticated through a dedicated `sellerToken` cookie.
-- **Add product:** Up to 4 images per product uploaded to Cloudinary, with name, multi-line description, category, price, and offer price (validated so offer price is not above the price).
-- **Product list:** View all products, toggle **In Stock / Out of Stock**, and delete with a confirmation modal.
-- **Orders:** View all COD orders and all paid online orders with customer address and items.
-- Out-of-stock products are automatically hidden from the customer storefront.
+## ✨ Features
 
-## Technology Stack
+### 🛒 Customer
+- **Accounts:** register and log in with email and password. Passwords are hashed with bcrypt, and the session lasts 7 days in an HTTP-only cookie.
+- **Storefront:** hero banner, category tiles, best sellers, a "Why We Are the Best" section and a newsletter signup.
+- **Browse and search:** All Products page with live navbar search, plus a page for each category.
+- **Product details:** image gallery, MRP vs offer price, description bullets, related products, **Add to Cart** and **Buy now**. Out-of-stock items can't be bought.
+- **Smart cart:**
+  - quantity selector, remove button, and live subtotal, 2% tax and total
+  - saved to the database automatically for logged-in users, so it follows them across devices
+  - **guest cart merges** into the saved cart on login, so nothing is lost
+  - products the seller deletes are removed from carts automatically
+- **Address book:** save multiple addresses and pick one at checkout.
+- **Payments:**
+  - 💵 **Cash on Delivery:** the order is created instantly.
+  - 💳 **Online (Stripe Checkout, INR):** the order is marked **Paid** only after Stripe confirms through a signed webhook. If the customer cancels, the cart is kept.
+- **My Orders:** every order with its items, amount, payment method, **Paid / Pending** badge, status and date.
+- **Polished UX:** toast notifications, loading and disabled buttons, an empty-cart state, a "Product not found" page and a responsive mobile menu.
 
-| Component | Technology | Purpose |
+### 🏪 Seller / Admin
+- **Secure login** at `/seller` with a dedicated `sellerToken` cookie. Credentials come from environment variables.
+- **Add Product:** up to 4 images (uploaded to Cloudinary), name, multi-line description, category, price and offer price, all validated.
+- **Product List:** table of every product with an **In Stock** toggle switch and delete with a confirmation modal.
+- **Orders:** every COD order and every paid online order, with items, customer address, amount, method and payment status.
+- Out-of-stock products are hidden from the storefront automatically.
+
+---
+
+## 🛠 Tech Stack
+
+| Layer | Technology | Why it was chosen |
 |---|---|---|
-| Programming Language | JavaScript (ES Modules) | Used on both client and server |
-| Frontend | React 19, Vite 7, React Router 7 | SPA, routing, build tooling |
-| Styling | Tailwind CSS 4 (`@tailwindcss/vite`), Outfit font | Responsive UI and theme (`#4fbf8b` primary) |
-| UI Utilities | react-hot-toast, lucide-react | Notifications and icons |
-| State Management | React Context API | Auth, products, cart, search state |
-| HTTP Client | Axios (`withCredentials`) | API calls with cookie authentication |
-| Backend | Node.js, Express 5 | REST API and business logic |
-| Database | MongoDB with Mongoose 8 | Users, products, addresses, orders |
-| Authentication | JWT (`jsonwebtoken`), bcryptjs, cookie-parser | Stateless sessions, password hashing |
-| File Uploads | Multer + Cloudinary | Product image upload and CDN hosting |
-| Payments | Stripe Checkout + Webhooks | Online card payments (INR) |
-| Tools | ESLint, Nodemon, Vercel | Linting, dev server, deployment |
+| **Language** | JavaScript (ES Modules) | One language across client and server. |
+| **Frontend** | React 19 + Vite 7 | Component-based UI; near-instant dev server and fast builds. |
+| **Routing** | React Router 7 | SPA navigation and nested seller routes. |
+| **State** | React Context API | Small global state (user, cart, products) without Redux boilerplate. |
+| **HTTP** | Axios | Global `baseURL` / `withCredentials`, plus an interceptor for readable errors. |
+| **Styling** | Tailwind CSS 4 (`@tailwindcss/vite`) | Utility-first, responsive, custom theme (`#4fbf8b`). |
+| **UI extras** | react-hot-toast, lucide-react, Outfit font | Notifications, icons, typography. |
+| **Backend** | Node.js + Express 5 | Minimal REST framework; async errors are handled automatically. |
+| **Database** | MongoDB Atlas + Mongoose 8 | Document model suits products and carts; schemas plus `populate()`. |
+| **Auth** | jsonwebtoken, bcryptjs, cookie-parser | Stateless sessions in HTTP-only cookies; salted password hashes. |
+| **Uploads** | Multer + Cloudinary | Multipart parsing; CDN storage, since serverless has no permanent disk. |
+| **Payments** | Stripe Checkout + Webhooks | Hosted, PCI-compliant payment page; trustworthy server-side confirmation. |
+| **Tooling** | ESLint, Nodemon | Code quality and auto-restart during development. |
+| **Hosting** | Vercel | Git-based deploys, CDN for the SPA, serverless functions for the API. |
 
-## System Architecture
+---
 
-The React SPA talks to the Express REST API over HTTPS using cookie-based JWT authentication. The API persists data in MongoDB, stores images on Cloudinary, and creates Stripe Checkout sessions. Stripe notifies the API about payment results via a signed webhook.
+## 🏗 Architecture
 
 ```mermaid
 flowchart LR
-    subgraph Client["Client (React + Vite)"]
+    subgraph Client["🖥️ Client — React + Vite (Vercel)"]
         UI[Pages & Components]
-        CTX[AppContext<br/>user, products, cart]
+        CTX[AppContext<br/>user · products · cart]
         UI <--> CTX
     end
 
-    subgraph Server["Server (Express 5)"]
-        MW[Auth Middleware<br/>authUser / authSeller]
-        RT[Routes -> Controllers]
-        MW --> RT
+    subgraph Server["⚙️ Server — Express 5 (Vercel Serverless)"]
+        DBC[DB health middleware]
+        MW[authUser / authSeller]
+        RT[Routes → Controllers]
+        DBC --> MW --> RT
     end
 
     DB[(MongoDB Atlas)]
     CLD[Cloudinary<br/>Image CDN]
     STR[Stripe<br/>Checkout]
 
-    CTX -- "Axios + cookies" --> MW
+    CTX -- "Axios + HTTP-only cookies" --> DBC
     RT --> DB
     RT -- "upload images" --> CLD
     RT -- "create session" --> STR
-    STR -- "webhook /stripe" --> RT
     CTX -- "redirect to pay" --> STR
+    STR -- "signed webhook /stripe" --> RT
 ```
 
-**Order flow (online payment):**
+The backend follows an **MVC-style** layout: **routes** map URLs to **controllers** (business logic), which use **Mongoose models** (data shape), and **middlewares** handle cross-cutting concerns such as authentication.
 
-1. Customer clicks *Proceed to Checkout* -> `POST /api/order/stripe`.
-2. Server recomputes the amount from DB prices (+2% tax), creates an unpaid `Order`, and creates a Stripe Checkout session carrying `orderId` and `userId` in metadata.
-3. Customer pays on Stripe's hosted page and returns to `/loader?next=my-orders`.
-4. Stripe calls `POST /stripe`; the server verifies the signature, marks the order `isPaid: true`, and clears the user's saved cart. On `payment_intent.payment_failed` the pending order is deleted.
+---
 
-## Screenshots and Demo
+## ⚙️ How It Works
 
-> Add your screenshots to `docs/screenshots/` and update the paths below.
+### Authentication
+1. On login, the server checks the password with `bcrypt.compare` and signs a JWT `{ id }` (7-day expiry).
+2. The JWT is set as an **HTTP-only, Secure, SameSite** cookie, so JavaScript can't read it.
+3. On every page load, the app calls `GET /api/user/is-auth` to restore the session and the saved cart.
+4. Protected routes run `authUser` / `authSeller`, which verify the token. The user id **always comes from the token**, never from the request body.
 
-| Home | Product Details |
-|---|---|
-| ![Home](docs/screenshots/home.png) | ![Product Details](docs/screenshots/product-details.png) |
+### Cart sync
+- The cart is an object `{ productId: quantity }` held in React Context.
+- When it changes, a `useEffect` saves it with `POST /api/cart/update` (logged-in users only).
+- On login, the guest cart is **merged** with the saved cart, keeping the larger quantity for each item.
 
-| Cart & Checkout | My Orders |
-|---|---|
-| ![Cart](docs/screenshots/cart.png) | ![My Orders](docs/screenshots/my-orders.png) |
+### Checkout (online payment)
+```mermaid
+sequenceDiagram
+    participant C as Customer (React)
+    participant S as API (Express)
+    participant DB as MongoDB
+    participant ST as Stripe
 
-| Seller: Add Product | Seller: Orders |
-|---|---|
-| ![Add Product](docs/screenshots/seller-add-product.png) | ![Seller Orders](docs/screenshots/seller-orders.png) |
+    C->>S: POST /api/order/stripe {items, address}
+    S->>DB: Check address owner, prices, stock
+    S->>DB: Create Order (isPaid: false)
+    S->>ST: Create Checkout Session (metadata: orderId, userId)
+    S-->>C: { url }
+    C->>ST: Redirect & pay
+    ST->>S: Webhook checkout.session.completed (signed)
+    S->>DB: Order.isPaid = true, paidAt; clear saved cart
+    ST-->>C: Redirect /loader?next=my-orders
+    C->>C: Clear local cart → My Orders
+```
 
-**Live Demo:** [Add URL if deployed]
+- **Pricing rule (server-side):** `subtotal = Σ(offerPrice × qty)`, `tax = floor(subtotal × 2%)`, `amount = subtotal + tax`. Shipping is free.
+- **Abandoned checkout:** the `checkout.session.expired` webhook deletes the unpaid order.
+- **COD** uses the same validation, creates the order immediately and clears the saved cart.
 
-**Demo Video:** [Add URL if available]
+### Resilience
+If the database is unreachable, the API answers immediately with `503 "Database is unavailable right now"` instead of hanging, and reconnects automatically once the database is back.
 
-## Project Structure
+---
+
+## 📁 Project Structure
 
 ```text
-OnlineFoodDelivery/
+FoodBasket/
 ├── client/                          # React + Vite frontend
-│   ├── public/
+│   ├── public/                      # favicon
 │   ├── src/
-│   │   ├── assets/                  # Images, icons, categories list (assets.js)
+│   │   ├── assets/                  # images, icons, categories, footer links (assets.js)
 │   │   ├── components/
-│   │   │   ├── seller/SellerLogin.jsx
-│   │   │   ├── Navbar.jsx, Footer.jsx, Login.jsx
-│   │   │   ├── MainBanner.jsx, BottomBanner.jsx, NewsLetter.jsx
-│   │   │   ├── Categories.jsx, BestSeller.jsx, ProductCard.jsx
-│   │   │   └── Loading.jsx
-│   │   ├── context/AppContext.jsx   # Global state + cart logic + API sync
+│   │   │   ├── Navbar.jsx · Footer.jsx · Login.jsx · Loading.jsx
+│   │   │   ├── MainBanner.jsx · Categories.jsx · BestSeller.jsx
+│   │   │   ├── BottomBanner.jsx · NewsLetter.jsx · ProductCard.jsx
+│   │   │   └── seller/SellerLogin.jsx
+│   │   ├── context/AppContext.jsx   # global state, cart logic, API sync
 │   │   ├── pages/
-│   │   │   ├── Home.jsx, AllProducts.jsx, ProductCategory.jsx
-│   │   │   ├── ProductDetails.jsx, Cart.jsx, AddAddress.jsx, MyOrders.jsx
-│   │   │   └── seller/ (SellerLayout, AddProduct, ProductList, Orders)
-│   │   ├── App.jsx                  # Routes
-│   │   ├── main.jsx                 # Entry, axios defaults
+│   │   │   ├── Home · AllProducts · ProductCategory · ProductDetails
+│   │   │   ├── Cart · AddAddress · MyOrders
+│   │   │   └── seller/ SellerLayout · AddProduct · ProductList · Orders
+│   │   ├── App.jsx                  # routes
+│   │   ├── main.jsx                 # entry + axios defaults
 │   │   └── index.css                # Tailwind + theme
 │   ├── vercel.json                  # SPA rewrite rule
 │   ├── vite.config.js
 │   └── package.json
 ├── server/                          # Express REST API
-│   ├── configs/                     # db.js, cloudinary.js, multer.js
-│   ├── controllers/                 # user, seller, product, cart, address, order
-│   ├── middlewares/                 # authUser.js, authSeller.js
-│   ├── models/                      # User, Product, Address, Order
-│   ├── routes/                      # *Route.js files
-│   ├── server.js                    # App entry point
-│   ├── vercel.json                  # Serverless deployment config
+│   ├── configs/                     # db.js · cloudinary.js · multer.js · cookie.js
+│   ├── controllers/                 # user · seller · product · cart · address · order
+│   ├── middlewares/                 # authUser.js · authSeller.js
+│   ├── models/                      # User · Product · Address · Order
+│   ├── routes/                      # *Route.js
+│   ├── server.js                    # app entry (exports app for Vercel)
+│   ├── vercel.json                  # serverless config
 │   └── package.json
-├── greencart_assets/                # Original design asset pack (images/icons)
-├── .gitignore
+├── greencart_assets/                # original design asset pack
+├── learning.md                      # full learning guide
 └── README.md
 ```
 
-## Prerequisites
+---
 
-- **Node.js** 18 or later and **npm**
-- A **MongoDB** database (local, or a free [MongoDB Atlas](https://www.mongodb.com/atlas) cluster)
-- A **Cloudinary** account (for product image uploads)
-- A **Stripe** account in test mode (for online payments) and the [Stripe CLI](https://stripe.com/docs/stripe-cli) for testing webhooks locally
+## 🚀 Getting Started
 
-## Installation and Setup
+### Prerequisites
+- **Node.js 18+** and **npm**
+- A **MongoDB** database (a free [MongoDB Atlas](https://www.mongodb.com/atlas) M0 cluster works)
+- A **[Cloudinary](https://cloudinary.com/)** account
+- A **[Stripe](https://stripe.com/)** account in test mode, plus the **[Stripe CLI](https://stripe.com/docs/stripe-cli)** for local webhooks
 
 ### 1. Clone the repository
-
 ```bash
-git clone https://github.com/AdvikaChaithra/OnlineFoodDelivery.git
-cd OnlineFoodDelivery
+git clone https://github.com/AdvikaChaithra/FoodBasket.git
+cd FoodBasket
 ```
 
 ### 2. Install dependencies
-
 ```bash
-# Backend
-cd server
-npm install
-
-# Frontend (in a new terminal)
-cd client
-npm install
+cd server && npm install
+cd ../client && npm install
 ```
 
 ### 3. Configure environment variables
 
-Create `server/.env`:
-
+**`server/.env`**
 ```env
 PORT=4000
 NODE_ENV=development
 
 # Database
-MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>/<db-name>
+MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>.mongodb.net/foodbasket?retryWrites=true&w=majority
 
 # Auth
 JWT_SECRET=replace_with_a_long_random_string
@@ -254,122 +280,120 @@ CLOUDINARY_API_SECRET=your_api_secret
 # Stripe
 STRIPE_SECRET_KEY=sk_test_xxx
 STRIPE_WEBHOOK_SECRET=whsec_xxx
+
+# Optional: fallback return URL for Stripe
+FRONTEND_URL=http://localhost:5173
 ```
 
-Create `client/.env`:
-
+**`client/.env`**
 ```env
 VITE_BACKEND_URL=http://localhost:4000
 VITE_CURRENCY=₹
 ```
 
-> Never commit real keys. `.env` files are already listed in `.gitignore`. Consider adding `server/.env.example` and `client/.env.example` with placeholder values.
+> 🔒 `.env` files are git-ignored. Never commit real keys.
 
-### 4. Start the application
-
+### 4. Run the app
 ```bash
-# Terminal 1 - backend (http://localhost:4000)
+# Terminal 1: API → http://localhost:4000
 cd server
-npm run server        # nodemon (development)
-# or: npm start       # plain node
-
-# Terminal 2 - frontend (http://localhost:5173)
+npm run server
+```
+```bash
+# Terminal 2: Web → http://localhost:5173
 cd client
 npm run dev
 ```
 
 ### 5. (Optional) Forward Stripe webhooks locally
-
 ```bash
 stripe listen --forward-to localhost:4000/stripe
 ```
-
-Copy the `whsec_...` secret printed by the CLI into `STRIPE_WEBHOOK_SECRET`.
+Copy the printed `whsec_...` secret into `STRIPE_WEBHOOK_SECRET` and restart the API.
 
 ### Available scripts
 
 | Location | Command | Description |
 |---|---|---|
-| `server/` | `npm run server` | Start API with Nodemon |
-| `server/` | `npm start` | Start API with Node |
-| `client/` | `npm run dev` | Start Vite dev server |
+| `server/` | `npm run server` / `npm run dev` | Start the API with Nodemon (auto-restart) |
+| `server/` | `npm start` | Start the API with Node |
+| `client/` | `npm run dev` | Start the Vite dev server |
 | `client/` | `npm run build` | Production build to `client/dist` |
 | `client/` | `npm run preview` | Preview the production build |
 | `client/` | `npm run lint` | Run ESLint |
 
-## Usage
+---
+
+## 🧭 Usage
 
 ### As a seller (set up the catalogue first)
-
-1. Open `http://localhost:5173/seller`.
-2. Log in with `SELLER_EMAIL` and `SELLER_PASSWORD` from `server/.env`.
-3. **Add Product:** upload up to 4 images, fill in name, description (one bullet per line), category, price, and offer price.
-4. **Product List:** toggle stock on/off or delete products.
-5. **Orders:** see all COD and paid orders with their delivery addresses.
+1. Open `http://localhost:5173/seller` and log in with `SELLER_EMAIL` / `SELLER_PASSWORD`.
+2. **Add Product:** upload up to 4 images and fill in the name, description (one bullet per line), category, price and offer price.
+3. **Product List:** toggle stock or delete products.
+4. **Orders:** review COD and paid orders with delivery details.
 
 ### As a customer
-
-1. Open `http://localhost:5173` and browse by category or use the search bar.
-2. Click a product to see details, then **Add to Cart** or **Buy now**.
-3. Register / log in (prompted automatically when you place an order).
-4. In the cart, click **Add address**, fill in the delivery details, and return to the cart.
+1. Open `http://localhost:5173`, then browse categories or search.
+2. Open a product → **Add to Cart** or **Buy now**.
+3. Log in or register (you'll be prompted when placing an order; your guest cart is kept).
+4. In the cart, click **Change → Add address** and save a delivery address.
 5. Choose **Cash On Delivery** or **Online Payment** and place the order.
-   - For Stripe test mode, use card number `4242 4242 4242 4242` with any future expiry and any CVC.
-6. Open **My Orders** from the profile menu to review your orders.
+   For Stripe test mode, use card `4242 4242 4242 4242`, any future expiry and any CVC.
+6. Open **My Orders** from the profile menu.
 
-### Frontend routes
+---
+
+## 🗺 Frontend Routes
 
 | Route | Page | Access |
 |---|---|---|
 | `/` | Home | Public |
-| `/products` | All products (search aware) | Public |
+| `/products` | All products (search-aware) | Public |
 | `/products/:category` | Category listing | Public |
 | `/products/:category/:id` | Product details | Public |
 | `/cart` | Cart and checkout | Public (login required to order) |
-| `/add-address` | Add delivery address | Logged-in user |
-| `/my-orders` | Order history | Logged-in user |
-| `/loader?next=...` | Post-payment loader, redirects after 5 s | Public |
-| `/seller` | Add product (seller login screen if unauthenticated) | Seller |
+| `/add-address` | Add delivery address | Customer |
+| `/my-orders` | Order history | Customer |
+| `/loader?next=my-orders` | Post-payment loader (redirects after 5 s) | Public |
+| `/seller` | Add Product (login screen if signed out) | Seller |
 | `/seller/product-list` | Manage products | Seller |
 | `/seller/orders` | All orders | Seller |
 
-## API Documentation
+---
 
-**Base URL:** `http://localhost:4000`
+## 📡 API Reference
 
-Authentication uses HTTP-only cookies: `token` for customers and `sellerToken` for the seller. Requests from the browser must send credentials (`axios.defaults.withCredentials = true`).
+**Base URL:** `http://localhost:4000` (local) · your Vercel backend URL (production)
 
-Responses are JSON of the form `{ "success": true|false, "message": "...", ...data }`. Note that failed requests currently return HTTP 200 with `success: false` (see [Limitations](#limitations)).
+- **Auth:** HTTP-only cookies. `token` is the customer cookie and `sellerToken` is the seller cookie. Browser requests must send credentials (`axios.defaults.withCredentials = true`).
+- **Response shape:** `{ "success": true | false, "message": "...", ...data }`
+- **Database down:** every `/api/*` route returns `503 { success: false, message: "Database is unavailable right now..." }`.
 
-### User — `/api/user`
-
+### 👤 User: `/api/user`
 | Method | Endpoint | Auth | Body | Description |
 |---|---|---|---|---|
-| POST | `/register` | – | `{ name, email, password }` | Create account, set `token` cookie |
-| POST | `/login` | – | `{ email, password }` | Log in, set `token` cookie |
-| GET | `/is-auth` | User | – | Returns the current user (without password) and saved `cartItems` |
-| GET | `/logout` | User | – | Clear `token` cookie |
+| POST | `/register` | – | `{ name, email, password }` (password ≥ 6 chars) | Create an account and set the `token` cookie |
+| POST | `/login` | – | `{ email, password }` | Log in and set the `token` cookie |
+| GET | `/is-auth` | User | – | Current user (without password) plus `cartItems` |
+| GET | `/logout` | – | – | Clear the `token` cookie |
 
-### Seller — `/api/seller`
-
+### 🏪 Seller: `/api/seller`
 | Method | Endpoint | Auth | Body | Description |
 |---|---|---|---|---|
-| POST | `/login` | – | `{ email, password }` | Log in as seller, set `sellerToken` cookie |
-| GET | `/is-auth` | Seller | – | Check seller session |
-| GET | `/logout` | – | – | Clear `sellerToken` cookie |
+| POST | `/login` | – | `{ email, password }` | Log in and set the `sellerToken` cookie |
+| GET | `/is-auth` | Seller | – | Check the seller session |
+| GET | `/logout` | – | – | Clear the `sellerToken` cookie |
 
-### Products — `/api/product`
-
+### 📦 Products: `/api/product`
 | Method | Endpoint | Auth | Body / Params | Description |
 |---|---|---|---|---|
-| GET | `/list` | – | – | All products |
+| GET | `/list` | – | – | All products, newest first |
 | GET | `/id/:id` | – | `id` | Single product |
-| POST | `/add` | Seller | `multipart/form-data`: `productData` (JSON string) + `images` (files) | Upload images to Cloudinary and create product |
-| POST | `/stock` | Seller | `{ id, inStock }` | Toggle availability |
-| DELETE | `/delete/:id` | Seller | `id` | Delete product |
+| POST | `/add` | Seller | `multipart/form-data`: `productData` (JSON string) + `images` (≤ 4 files) | Upload images to Cloudinary and create the product |
+| POST | `/stock` | Seller | `{ id, inStock: boolean }` | Toggle availability |
+| DELETE | `/delete/:id` | Seller | `id` | Delete a product |
 
 `productData` example:
-
 ```json
 {
   "name": "Fresh Tomato",
@@ -379,43 +403,43 @@ Responses are JSON of the form `{ "success": true|false, "message": "...", ...da
   "offerPrice": 32
 }
 ```
+`category` must be one of `Vegetables`, `Fruits`, `Drinks`, `Instant`, `Dairy`, `Bakery` or `Grains`. `offerPrice` must be ≤ `price`.
 
-### Cart — `/api/cart`
-
+### 🛒 Cart: `/api/cart`
 | Method | Endpoint | Auth | Body | Description |
 |---|---|---|---|---|
-| POST | `/update` | User | `{ cartItems: { "<productId>": quantity } }` | Save cart to the user document |
+| POST | `/update` | User | `{ cartItems: { "<productId>": quantity } }` | Save the cart (invalid entries are dropped) |
 
-### Address — `/api/address`
-
+### 📍 Address: `/api/address`
 | Method | Endpoint | Auth | Body | Description |
 |---|---|---|---|---|
-| POST | `/add` | User | `{ address: { firstName, lastName, email, street, city, state, zipcode, country, phone } }` | Save a new address |
+| POST | `/add` | User | `{ address: { firstName, lastName, email, street, city, state, zipcode, country, phone } }` | Save an address |
 | GET | `/get` | User | – | List the user's addresses |
 
-### Orders — `/api/order`
-
+### 🧾 Orders: `/api/order`
 | Method | Endpoint | Auth | Body | Description |
 |---|---|---|---|---|
 | POST | `/cod` | User | `{ items: [{ product, quantity }], address }` | Place a Cash on Delivery order |
-| POST | `/stripe` | User | `{ items: [{ product, quantity }], address }` | Create order + Stripe Checkout session; returns `{ url }` |
-| GET | `/user` | User | – | Orders of the logged-in user (newest first, populated) |
-| GET | `/seller` | Seller | – | All COD orders and paid online orders |
-| POST | `/stripe` (root path, **not** under `/api`) | Stripe signature | Raw Stripe event | Webhook handler: `checkout.session.completed`, `payment_intent.payment_failed` |
+| POST | `/stripe` | User | `{ items: [{ product, quantity }], address }` | Create the order plus a Stripe Checkout session → `{ url }` |
+| GET | `/user` | User | – | The user's orders (newest first, populated) |
+| GET | `/seller` | Seller | – | All COD orders plus paid online orders |
 
-Example success response (`POST /api/order/cod`):
+### 🔔 Stripe webhook
+| Method | Endpoint | Auth | Handles |
+|---|---|---|---|
+| POST | `/stripe` (root path, **not** under `/api`) | Stripe signature | `checkout.session.completed` → mark paid · `checkout.session.expired` → delete the unpaid order |
 
+**Example responses**
 ```json
 { "success": true, "message": "Order placed successfully" }
 ```
-
-Example error response:
-
 ```json
-{ "success": false, "message": "Invalid order data" }
+{ "success": false, "message": "Tomato is out of stock" }
 ```
 
-## Data Models
+---
+
+## 🗃 Data Models
 
 ```mermaid
 erDiagram
@@ -433,11 +457,12 @@ erDiagram
     PRODUCT {
         string name
         array description
-        number price
-        number offerPrice
+        number price "MRP"
+        number offerPrice "selling price"
         array image "Cloudinary URLs"
         string category
         boolean inStock
+        date createdAt
     }
     ADDRESS {
         string userId
@@ -447,7 +472,7 @@ erDiagram
         string street
         string city
         string state
-        number zipcode
+        string zipcode
         string country
         string phone
     }
@@ -457,125 +482,148 @@ erDiagram
         number amount "incl. 2% tax"
         string address
         string status "default: Order Placed"
-        string paymentType "COD or Online"
+        string paymentType "COD | Online"
         boolean isPaid
+        date paidAt
+        date createdAt
     }
 ```
 
-**Pricing rules (calculated on the server):** `amount = Σ(offerPrice × quantity)`, plus 2% tax (rounded down). Shipping is free.
+---
 
-## Testing and Results
+## 🔐 Security
 
-The repository does not yet include an automated test suite; the application has been verified through manual end-to-end testing of the main flows. Add your own results/screenshots here after running them.
+| Concern | How FoodBasket handles it |
+|---|---|
+| Password storage | bcrypt with 10 salt rounds; the hash is never returned to the client. |
+| Session theft (XSS) | JWT in an **HTTP-only** cookie, which JavaScript can't read. |
+| Transport | `secure` cookies and `SameSite=None` in production; `SameSite=Strict` locally. |
+| Price tampering | Totals and Stripe line items are calculated on the server from database prices. |
+| Fake payments | Webhooks are verified with `STRIPE_WEBHOOK_SECRET`; orders are only marked paid there. |
+| Acting as another user | User id comes from the verified token; address ownership is checked on every order. |
+| Input validation | ObjectId checks, positive whole-number quantities, category allow-list, price rules, password length. |
+| Admin access | Separate `sellerToken` cookie plus a `SELLER_EMAIL` match in `authSeller`. |
+| File uploads | Seller auth runs **before** Multer; max 4 images; temp files are deleted. |
+| User enumeration | Generic "Invalid email or password" message. |
+| Open redirect | `/loader?next=` only accepts internal paths. |
+| Card data | Never touches the server (Stripe-hosted Checkout). |
+| Secrets | Environment variables only; `.env` is git-ignored. |
+
+---
+
+## ☁️ Deployment
+
+Both apps deploy to **Vercel** as two separate projects from this repository.
+
+### Backend (`server/`)
+1. Import the repo into Vercel with **Root Directory** set to `server`.
+2. `vercel.json` builds `server.js` with `@vercel/node` and routes every path to it. `server.js` exports the Express app, so it runs as a serverless function.
+3. Add every variable from `server/.env` in **Settings → Environment Variables**, with `NODE_ENV=production`.
+4. In **MongoDB Atlas → Network Access**, allow `0.0.0.0/0`, because Vercel's IP addresses change.
+5. In **Stripe → Developers → Webhooks**, add `https://<your-backend>.vercel.app/stripe` with the events `checkout.session.completed` and `checkout.session.expired`. Copy the signing secret into `STRIPE_WEBHOOK_SECRET`.
+
+### Frontend (`client/`)
+1. Import the repo again with **Root Directory** set to `client` (framework: Vite).
+2. Set `VITE_BACKEND_URL=https://<your-backend>.vercel.app` and `VITE_CURRENCY=₹`.
+3. `vercel.json` rewrites every path to `/`, so React Router can handle deep links like `/cart` on refresh.
+
+**Live Demo:** *add your frontend URL here*
+**API:** `https://food-basket-backend.vercel.app`
+
+---
+
+## ✅ Testing Checklist
 
 | Scenario | Expected result |
 |---|---|
 | Register with a new email | Account created, logged in, cookie set |
 | Register with an existing email | "User already exists" |
-| Login with wrong password | "Invalid email or password" |
-| Add item to cart while logged in | Cart count updates; cart saved to DB; persists after refresh |
-| Place COD order | Order saved with `isPaid: false`; appears in My Orders and seller Orders |
-| Stripe test payment (`4242 4242 4242 4242`) | Redirect to Stripe, then back to My Orders; order marked paid via webhook |
-| Stripe card declined | Pending order removed by webhook |
-| Seller marks product out of stock | Product disappears from storefront |
-| Customer opens `/api/order/seller` | "Not Authorized" |
-| Add product with offer price above price | Blocked in UI with an error toast |
+| Login with a wrong password | "Invalid email or password" |
+| Add items as a guest, then log in | Guest cart merged with the saved cart |
+| Refresh after adding items while logged in | Cart persists (saved in MongoDB) |
+| Place a COD order | Order saved; shown in My Orders and seller Orders; cart cleared |
+| Stripe payment with `4242 4242 4242 4242` | Redirect to Stripe → back to My Orders; order **Paid** via webhook |
+| Cancel on the Stripe page | Back to the cart with items intact |
+| Seller marks a product out of stock | Product hidden from the storefront and can't be ordered |
+| Customer calls `/api/order/seller` | "Not Authorized" |
+| Offer price above price | Rejected in the UI and by the API |
+| Database unreachable | Instant "Database is unavailable" toast |
 
-**Suggested next step:** add API tests with Jest/Vitest + Supertest and component tests with React Testing Library.
+```bash
+cd client && npm run lint && npm run build
+```
 
-## Challenges and Solutions
+---
 
-- **Challenge:** Stripe signature verification needs the *raw* request body, but `express.json()` would parse it first.
-  **Solution:** The webhook route (`POST /stripe`) is registered *before* `express.json()` and uses `express.raw({ type: "application/json" })`.
+## 🧩 Challenges and Solutions
 
-- **Challenge:** Trusting prices sent from the browser would allow tampering.
-  **Solution:** The client sends only product IDs and quantities; the server looks up each product and computes the total (and Stripe line items) itself.
+| Challenge | Solution |
+|---|---|
+| Stripe signature checks need the **raw** body, but `express.json()` parses it first. | Register `POST /stripe` with `express.raw()` **before** `express.json()`. |
+| Prices sent from the browser could be edited. | The client sends only ids and quantities; the server looks up prices and computes the totals. |
+| Cookies across two domains (frontend and backend on separate Vercel projects). | `httpOnly` + `secure` + `SameSite=None` in production; CORS with credentials; Axios `withCredentials`. |
+| Unpaid or abandoned online orders cluttering the seller view. | The seller sees only COD or paid orders; the `checkout.session.expired` webhook deletes stale unpaid orders. |
+| Guest cart lost on login. | Merge the guest and saved carts on login, keeping the larger quantity per item. |
+| No permanent disk on serverless. | Images go to Cloudinary; temp upload files are deleted after each request. |
+| Queries hanging when the database is down. | Mongoose buffering disabled, plus a fail-fast 503 middleware with automatic reconnect. |
+| Float rounding in payment amounts. | Amounts converted to paise with `Math.round(value × 100)`. |
 
-- **Challenge:** Cookie-based auth across a separately hosted frontend and backend (e.g. two Vercel projects).
-  **Solution:** Cookies are `httpOnly`, and in production use `secure: true` with `sameSite: "none"`; Axios is configured with `withCredentials`, and CORS allows credentials.
+---
 
-- **Challenge:** Showing unpaid or abandoned online orders to the seller.
-  **Solution:** The seller order query returns only COD orders or orders with `isPaid: true`; failed payments delete the pending order.
+## 🛣 Roadmap
 
-- **Challenge:** Keeping the cart consistent between guest and logged-in states.
-  **Solution:** Cart state lives in React Context and is synced to the user document in MongoDB whenever it changes while a user is logged in.
+- [ ] Seller order-status updates (Packed → Shipped → Delivered) and customer tracking
+- [ ] Email or SMS order notifications
+- [ ] Real product reviews and ratings; wishlist
+- [ ] Coupons, delivery slots and delivery-fee rules
+- [ ] Pagination, sorting and filters on listings
+- [ ] Multi-seller support with role-based access
+- [ ] Admin analytics (sales, top products, low-stock alerts)
+- [ ] `helmet`, rate limiting and schema validation (Zod/Joi)
+- [ ] Automated tests (Jest + Supertest, React Testing Library) and CI with GitHub Actions
+- [ ] Docker setup for one-command local development
 
-- **Challenge:** Multiple image uploads per product.
-  **Solution:** Multer receives up to 4 files, which are uploaded to Cloudinary in parallel (`Promise.all`) and stored as an array of secure URLs.
+---
 
-## Limitations
+## 🤝 Contributing
 
-Known issues and assumptions, so you know what to harden before real-world use:
-
-- **Single seller account** taken from environment variables (no seller registration or multi-vendor support). Credentials are compared in plain text.
-- **No order status management:** orders default to `Order Placed`; there is no endpoint or UI for the seller to update status (shipped, delivered, etc.).
-- **Cart is cleared on the client before Stripe payment completes**, so cancelling on the Stripe page leaves an empty cart.
-- The Order schema does not define `paidAt`, so the timestamp set in the webhook is not persisted.
-- `POST /api/order/stripe-webhook` exists but is not reliable because JSON parsing runs before it; use the root `/stripe` endpoint for Stripe.
-- API errors return HTTP 200 with `success: false` instead of proper 4xx/5xx status codes.
-- CORS is set to `origin: true` (reflects any origin) with credentials enabled.
-- No rate limiting, input schema validation, or password-strength rules.
-- Deleting a product does not remove its images from Cloudinary; Multer temp files are not cleaned up.
-- Product ratings on the details page are static, and the "Contact" link and newsletter form are placeholders.
-- No automated tests. Currency is hard-coded to INR in the Stripe session.
-- Repository contains a duplicate `greencart_assets/` folder and a root `package.json` with dependencies that belong to `client/`.
-
-## Future Enhancements
-
-- Seller order-status updates and customer-visible order tracking (placed -> packed -> out for delivery -> delivered).
-- Real product reviews and ratings; wishlist/favourites.
-- Coupons, delivery slots, and delivery-fee rules.
-- Email/SMS notifications (order confirmation, status changes).
-- Pagination, sorting, and filters (price, category, availability) on product listings.
-- Admin analytics dashboard (sales, top products, low-stock alerts).
-- Proper HTTP status codes, request validation (Zod/Joi), `helmet`, and rate limiting.
-- Restaurant/multi-vendor support and live delivery tracking.
-- Automated tests and a CI pipeline (GitHub Actions).
-- Docker setup for one-command local development.
-
-## Security
-
-- Passwords are hashed with **bcrypt** (10 salt rounds) before storage.
-- JWTs are stored in **HTTP-only** cookies (not accessible to JavaScript) and expire after 7 days; `secure` and `sameSite` are enabled in production.
-- Protected routes use dedicated middleware (`authUser`, `authSeller`); seller routes verify the token's email against `SELLER_EMAIL`.
-- Order totals are computed server-side; Stripe webhooks are verified using `STRIPE_WEBHOOK_SECRET`.
-- All secrets live in environment variables and `.env` files are git-ignored. **Rotate any key that was ever committed.**
-- Recommended before production: restrict CORS to your frontend origin, add `helmet` and rate limiting, validate all inputs, use hashed seller credentials, and return proper HTTP status codes.
-
-## Deployment
-
-Both apps include a `vercel.json`:
-
-- **Frontend (`client/`):** deploy as a Vite project on Vercel; the rewrite rule sends all paths to `index.html` for client-side routing. Set `VITE_BACKEND_URL` and `VITE_CURRENCY`.
-- **Backend (`server/`):** deploy with `@vercel/node`; set all variables from `server/.env` in the project settings, with `NODE_ENV=production`.
-- In Stripe, add a webhook endpoint `https://<your-backend-domain>/stripe` listening for `checkout.session.completed` and `payment_intent.payment_failed`, and copy its signing secret to `STRIPE_WEBHOOK_SECRET`.
-
-## Contributing
-
-Contributions, bug reports, and feature ideas are welcome.
+Contributions, bug reports and ideas are welcome.
 
 1. Fork the repository.
-2. Create a feature branch: `git checkout -b feature/your-feature`.
-3. Commit your changes: `git commit -m "Add your feature"`.
-4. Push the branch: `git push origin feature/your-feature`.
+2. Create a branch: `git checkout -b feature/your-feature`
+3. Commit: `git commit -m "Add your feature"`
+4. Push: `git push origin feature/your-feature`
 5. Open a Pull Request describing what changed and why.
 
-For bugs, please open an issue with steps to reproduce, expected behaviour, and screenshots if relevant.
+For bugs, open an issue with steps to reproduce, the expected behaviour and screenshots.
 
-## References and Acknowledgements
+---
 
-- [React](https://react.dev/), [Vite](https://vite.dev/), [React Router](https://reactrouter.com/)
-- [Tailwind CSS](https://tailwindcss.com/), [Lucide Icons](https://lucide.dev/), [react-hot-toast](https://react-hot-toast.com/)
-- [Express](https://expressjs.com/), [Mongoose](https://mongoosejs.com/), [MongoDB Atlas](https://www.mongodb.com/atlas)
-- [Stripe Checkout and Webhooks](https://stripe.com/docs/payments/checkout), [Cloudinary](https://cloudinary.com/documentation), [Multer](https://github.com/expressjs/multer)
-- UI illustrations and product images come from the *GreenCart* asset pack included in `greencart_assets/`. Please verify the asset license before any commercial use.
+## 🙏 Acknowledgements
 
-## License
+- [React](https://react.dev/) · [Vite](https://vite.dev/) · [React Router](https://reactrouter.com/) · [Tailwind CSS](https://tailwindcss.com/)
+- [Express](https://expressjs.com/) · [Mongoose](https://mongoosejs.com/) · [MongoDB Atlas](https://www.mongodb.com/atlas)
+- [Stripe Checkout and Webhooks](https://stripe.com/docs/payments/checkout) · [Cloudinary](https://cloudinary.com/documentation) · [Multer](https://github.com/expressjs/multer)
+- [Lucide Icons](https://lucide.dev/) · [react-hot-toast](https://react-hot-toast.com/)
+- UI illustrations and product images come from the *GreenCart* asset pack in `greencart_assets/`. Check its license before commercial use.
 
-This project is released under the **MIT License**. Add a `LICENSE` file at the repository root to make this official.
+---
 
-## Author
+## 📄 License
+
+Released under the **MIT License**.
+
+---
+
+## 👩‍💻 Author
 
 **Advika**
 
 - GitHub: [@AdvikaChaithra](https://github.com/AdvikaChaithra)
+- Repository: [AdvikaChaithra/FoodBasket](https://github.com/AdvikaChaithra/FoodBasket)
+
+<div align="center">
+
+⭐ If you found this project helpful, consider giving it a star!
+
+</div>

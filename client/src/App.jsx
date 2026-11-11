@@ -23,7 +23,7 @@ import Loading from './components/Loading'
 
 const App = () => {
   
-  const isSellerPath = useLocation().pathname.includes("seller");
+  const isSellerPath = useLocation().pathname.startsWith("/seller");
   const {showUserLogin, isSeller} = useAppContext()
   
   return (
@@ -40,7 +40,7 @@ const App = () => {
           <Route path='/products' element={<AllProducts/>} />
           <Route path='/products/:category' element={<ProductCategory/>} />
           <Route path='/products/:category/:id' element={<ProductDetails/>} />
-          <Route path='/Cart' element={<Cart/>} />
+          <Route path='/cart' element={<Cart/>} />
           <Route path='/add-address' element={<AddAddress/>} />
           <Route path='/my-orders' element={<MyOrders/>} />
           <Route path='/loader' element={<Loading/>} />

@@ -1,11 +1,80 @@
 //server/controllers/orderController.js
 
+import mongoose from "mongoose";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
+import Address from "../models/Address.js";
 import Stripe from "stripe";
 import User from "../models/User.js";
 
-const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
+// Created lazily so a missing STRIPE_SECRET_KEY doesn't crash the whole
+// server at startup (COD orders and the rest of the API keep working).
+let stripeInstance = null;
+const getStripe = () => {
+  if (!stripeInstance) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error("Online payment is not configured");
+    }
+    stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
+  }
+  return stripeInstance;
+};
+
+const TAX_RATE = 0.02;
+
+/* ===================== SHARED VALIDATION ===================== */
+// Validates the request, recomputes prices from the database (never trust
+// the client) and returns { error } or { orderItems, products, amount, tax }.
+
+const buildOrder = async (userId, items, address) => {
+  if (!Array.isArray(items) || items.length === 0 || !address) {
+    return { error: "Invalid order data" };
+  }
+
+  if (!mongoose.isValidObjectId(address)) {
+    return { error: "Invalid address" };
+  }
+
+  const userAddress = await Address.findOne({ _id: address, userId });
+  if (!userAddress) {
+    return { error: "Address not found" };
+  }
+
+  const orderItems = [];
+  const products = [];
+  let subtotal = 0;
+
+  for (const item of items) {
+    const quantity = Number(item?.quantity);
+
+    if (!mongoose.isValidObjectId(item?.product)) {
+      return { error: "Product not found" };
+    }
+
+    if (!Number.isInteger(quantity) || quantity < 1) {
+      return { error: "Invalid product quantity" };
+    }
+
+    const product = await Product.findById(item.product);
+
+    if (!product) {
+      return { error: "Product not found" };
+    }
+
+    if (!product.inStock) {
+      return { error: `${product.name} is out of stock` };
+    }
+
+    subtotal += product.offerPrice * quantity;
+    orderItems.push({ product: product._id.toString(), quantity });
+    products.push({ product, quantity });
+  }
+
+  const tax = Math.floor(subtotal * TAX_RATE);
+  const amount = Math.round((subtotal + tax) * 100) / 100;
+
+  return { orderItems, products, amount, tax };
+};
 
 /* ===================== PLACE ORDER COD ===================== */
 /* /api/order/cod */
@@ -15,33 +84,22 @@ export const placeOrderCOD = async (req, res) => {
     const userId = req.userId;
     const { items, address } = req.body;
 
-    if (!items || items.length === 0 || !address) {
-      return res.json({ success: false, message: "Invalid order data" });
+    const result = await buildOrder(userId, items, address);
+    if (result.error) {
+      return res.json({ success: false, message: result.error });
     }
-
-    let amount = 0;
-
-    for (const item of items) {
-      const product = await Product.findById(item.product);
-
-      if (!product) {
-        return res.json({ success: false, message: "Product not found" });
-      }
-
-      amount += product.offerPrice * item.quantity;
-    }
-
-    const tax = Math.floor(amount * 0.02);
-    amount += tax;
 
     await Order.create({
       userId,
-      items,
+      items: result.orderItems,
       address,
-      amount,
+      amount: result.amount,
       paymentType: "COD",
       isPaid: false,
     });
+
+    // Empty the saved cart now that the order exists
+    await User.findByIdAndUpdate(userId, { cartItems: {} });
 
     res.json({
       success: true,
@@ -64,70 +122,71 @@ export const placeOrderStripe = async (req, res) => {
   try {
     const userId = req.userId;
     const { items, address } = req.body;
-    const { origin } = req.headers;
+    const origin = req.headers.origin || process.env.FRONTEND_URL;
 
-    if (!items || items.length === 0 || !address) {
-      return res.json({ success: false, message: "Invalid order data" });
+    if (!origin) {
+      return res.json({ success: false, message: "Unable to determine return URL" });
     }
 
-    let amount = 0;
-    const line_items = [];
+    const stripe = getStripe();
 
-    for (const item of items) {
-      const product = await Product.findById(item.product);
+    const result = await buildOrder(userId, items, address);
+    if (result.error) {
+      return res.json({ success: false, message: result.error });
+    }
 
-      if (!product) {
-        return res.json({ success: false, message: "Product not found" });
-      }
+    const line_items = result.products.map(({ product, quantity }) => ({
+      price_data: {
+        currency: "inr",
+        product_data: {
+          name: product.name,
+        },
+        // Math.round avoids float errors such as 19.99 * 100 = 1998.999…
+        unit_amount: Math.round(product.offerPrice * 100),
+      },
+      quantity,
+    }));
 
-      amount += product.offerPrice * item.quantity;
-
+    if (result.tax > 0) {
       line_items.push({
         price_data: {
           currency: "inr",
           product_data: {
-            name: product.name,
+            name: "Tax",
           },
-          unit_amount: Math.floor(product.offerPrice * 100),
+          unit_amount: Math.round(result.tax * 100),
         },
-        quantity: item.quantity,
+        quantity: 1,
       });
     }
 
-    const tax = Math.floor(amount * 0.02);
-    amount += tax;
-
     const order = await Order.create({
       userId,
-      items,
+      items: result.orderItems,
       address,
-      amount,
+      amount: result.amount,
       paymentType: "Online",
       isPaid: false,
     });
 
-    line_items.push({
-      price_data: {
-        currency: "inr",
-        product_data: {
-          name: "Tax",
+    let session;
+    try {
+      session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items,
+        mode: "payment",
+        success_url: `${origin}/loader?next=my-orders`,
+        cancel_url: `${origin}/cart`,
+        metadata: {
+          orderId: order._id.toString(),
+          userId: userId.toString(),
         },
-        unit_amount: Math.floor(tax * 100),
-      },
-      quantity: 1,
-    });
-
-    const session = await stripeInstance.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items,
-      mode: "payment",
-      success_url: `${origin}/loader?next=my-orders`,
-      cancel_url: `${origin}/cart`,
-      metadata: {
-        orderId: order._id.toString(),
-        userId: userId.toString(),
-      },
-    });
+      });
+    } catch (stripeError) {
+      // Don't leave an orphaned unpaid order behind
+      await Order.findByIdAndDelete(order._id);
+      throw stripeError;
+    }
 
     res.json({
       success: true,
@@ -151,7 +210,7 @@ export const stripeWebhooks = async (req, res) => {
   let event;
 
   try {
-    event = stripeInstance.webhooks.constructEvent(
+    event = getStripe().webhooks.constructEvent(
       req.body,
       sig,
       process.env.STRIPE_WEBHOOK_SECRET,
@@ -164,7 +223,9 @@ export const stripeWebhooks = async (req, res) => {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object;
-        const { orderId, userId } = session.metadata;
+        const { orderId, userId } = session.metadata || {};
+
+        if (session.payment_status !== "paid") break;
 
         if (orderId) {
           await Order.findByIdAndUpdate(orderId, {
@@ -182,17 +243,15 @@ export const stripeWebhooks = async (req, res) => {
         break;
       }
 
-      case "payment_intent.payment_failed": {
-        const paymentIntent = event.data.object;
+      // The customer abandoned checkout: remove the unpaid order.
+      // (A single failed card attempt is NOT final — the customer can retry
+      // in the same session — so we don't delete on payment_failed.)
+      case "checkout.session.expired": {
+        const session = event.data.object;
+        const { orderId } = session.metadata || {};
 
-        const sessions = await stripeInstance.checkout.sessions.list({
-          payment_intent: paymentIntent.id,
-        });
-
-        if (sessions.data.length > 0) {
-          const { orderId } = sessions.data[0].metadata;
-
-          await Order.findByIdAndDelete(orderId);
+        if (orderId) {
+          await Order.findOneAndDelete({ _id: orderId, isPaid: false });
         }
 
         break;
@@ -203,6 +262,7 @@ export const stripeWebhooks = async (req, res) => {
     }
   } catch (error) {
     console.error("Webhook processing error:", error);
+    return res.status(500).json({ received: false });
   }
 
   res.json({ received: true });
@@ -215,17 +275,12 @@ export const getUserOrders = async (req, res) => {
   try {
     const userId = req.userId;
 
-    const orders = await Order.find({
-      userId,
-      $or: [
-        { paymentType: "COD" },
-        { paymentType: "Online" },
-        { isPaid: true },
-      ],
-    })
+    // Customers see all their orders (online orders still awaiting Stripe
+    // confirmation are shown with a "Pending" payment status).
+    const orders = await Order.find({ userId })
       .populate({
         path: "items.product",
-        select: "name image offerPrice",
+        select: "name image offerPrice category",
       })
       .populate("address")
       .sort({ createdAt: -1 });
@@ -254,17 +309,10 @@ export const getAllOrders = async (req, res) => {
     })
       .populate({
         path: "items.product",
-        select: "name image offerPrice",
+        select: "name image offerPrice category",
       })
       .populate("address")
       .sort({ createdAt: -1 });
-
-    if (!orders || orders.length === 0) {
-      return res.json({
-        success: true,
-        orders: [],
-      });
-    }
 
     res.json({
       success: true,

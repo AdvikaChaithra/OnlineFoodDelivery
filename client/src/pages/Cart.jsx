@@ -9,7 +9,6 @@ const Cart = () => {
     products,
     currency,
     cartItems,
-    removeFromCart,
     getCartCount,
     updateCartItem,
     navigate,
@@ -25,6 +24,12 @@ const Cart = () => {
   const [showAddress, setShowAddress] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [paymentOption, setPaymentOption] = useState("COD");
+  const [placingOrder, setPlacingOrder] = useState(false);
+
+  // Must match the server: tax = floor(2% of subtotal)
+  const subtotal = getCartAmount();
+  const tax = Math.floor(subtotal * 0.02);
+  const total = Math.round((subtotal + tax) * 100) / 100;
 
   /* ---------------- Build Cart ---------------- */
 
@@ -74,10 +79,18 @@ const Cart = () => {
       return;
     }
 
+    if (cartArray.length === 0) {
+      toast.error("Your cart is empty");
+      return;
+    }
+
     if (!selectedAddress) {
       toast.error("Please select an address");
       return;
     }
+
+    if (placingOrder) return;
+    setPlacingOrder(true);
 
     try {
       const orderItems = cartArray.map((item) => ({
@@ -87,7 +100,6 @@ const Cart = () => {
 
       if (paymentOption === "COD") {
         const { data } = await axios.post("/api/order/cod", {
-          userId: user._id,
           items: orderItems,
           address: selectedAddress._id,
         });
@@ -101,14 +113,15 @@ const Cart = () => {
         }
       } else {
         const { data } = await axios.post("/api/order/stripe", {
-          userId: user._id,
           items: orderItems,
           address: selectedAddress._id,
         });
 
         if (data.success) {
-          setCartItems({});
+          // The cart is cleared after payment succeeds (see /loader), so it
+          // is kept if the customer cancels on the Stripe page.
           window.location.replace(data.url);
+          return;
         } else {
           toast.error(data.message);
         }
@@ -116,6 +129,7 @@ const Cart = () => {
     } catch (error) {
       toast.error(error.message);
     }
+    setPlacingOrder(false);
   };
 
   /* ---------------- Effects ---------------- */
@@ -124,13 +138,37 @@ const Cart = () => {
     if (products.length > 0) {
       getCart();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [products, cartItems]);
 
   useEffect(() => {
     if (user) {
       getUserAddress();
+    } else {
+      setAddresses([]);
+      setSelectedAddress(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
+
+  /* ---------------- Empty Cart ---------------- */
+
+  if (products.length > 0 && cartArray.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+        <p className="text-2xl font-medium text-gray-500">Your cart is empty</p>
+        <button
+          onClick={() => {
+            navigate("/products");
+            scrollTo(0, 0);
+          }}
+          className="px-8 py-2.5 bg-primary text-white rounded hover:bg-primary-dull transition cursor-pointer"
+        >
+          Shop now
+        </button>
+      </div>
+    );
+  }
 
   /* ---------------- UI ---------------- */
 
@@ -207,11 +245,11 @@ const Cart = () => {
 
             <p className="text-center">
               {currency}
-              {product.offerPrice * product.quantity}
+              {Math.round(product.offerPrice * product.quantity * 100) / 100}
             </p>
 
             <button
-              onClick={() => removeFromCart(product._id)}
+              onClick={() => updateCartItem(product._id, 0)}
               className="cursor-pointer mx-auto"
             >
               <img
@@ -304,6 +342,7 @@ const Cart = () => {
           <p className="text-sm font-medium uppercase mt-6">Payment Method</p>
 
           <select
+            value={paymentOption}
             onChange={(e) => setPaymentOption(e.target.value)}
             className="w-full border border-gray-300 bg-white px-3 py-2 mt-2 outline-none"
           >
@@ -321,7 +360,7 @@ const Cart = () => {
             <span>Price</span>
             <span>
               {currency}
-              {getCartAmount()}
+              {subtotal}
             </span>
           </p>
 
@@ -334,7 +373,7 @@ const Cart = () => {
             <span>Tax (2%)</span>
             <span>
               {currency}
-              {(getCartAmount() * 2) / 100}
+              {tax}
             </span>
           </p>
 
@@ -342,16 +381,21 @@ const Cart = () => {
             <span>Total Amount:</span>
             <span>
               {currency}
-              {getCartAmount() + (getCartAmount() * 2) / 100}
+              {total}
             </span>
           </p>
         </div>
 
         <button
           onClick={placeOrder}
-          className="w-full py-3 mt-6 cursor-pointer bg-primary text-white font-medium hover:bg-primary-dull transition"
+          disabled={placingOrder}
+          className="w-full py-3 mt-6 cursor-pointer bg-primary text-white font-medium hover:bg-primary-dull transition disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {paymentOption === "COD" ? "Place Order" : "Proceed to Checkout"}
+          {placingOrder
+            ? "Please wait..."
+            : paymentOption === "COD"
+              ? "Place Order"
+              : "Proceed to Checkout"}
         </button>
       </div>
     </div>

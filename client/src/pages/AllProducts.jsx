@@ -27,8 +27,8 @@ const AllProducts = () => {
             </div>
 
             <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-6 lg:grid-cols-5 mt-6'>
-                {filteredProducts.filter((product) => product.inStock).map((product, index) => (
-                    <ProductCard key={index} product={product} />
+                {filteredProducts.filter((product) => product.inStock).map((product) => (
+                    <ProductCard key={product._id} product={product} />
 
                 ))}
 

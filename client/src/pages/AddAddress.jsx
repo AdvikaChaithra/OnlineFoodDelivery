@@ -17,7 +17,7 @@ const InputField = ({ type, placeholder, name, handleChange, address }) => (
 
 const AddAddress = () => {
 
-    const { axios, user, navigate } = useAppContext();
+    const { axios, user, navigate, isUserLoading, setShowUserLogin } = useAppContext();
 
     const [address, setAddress] = useState({
         firstName: '',
@@ -40,13 +40,16 @@ const AddAddress = () => {
             [name]: value,
 
         }))
-        console.log(address);
     }
 
 
 
+    const [saving, setSaving] = useState(false)
+
     const onSubmitHandler = async (e) => {
         e.preventDefault();
+        if (saving) return;
+        setSaving(true);
         try {
             const {data} = await axios.post('/api/address/add', {address});
 
@@ -60,14 +63,19 @@ const AddAddress = () => {
         } catch (error) {
             toast.error(error.message)
 
+        } finally {
+            setSaving(false)
         }
     }
 
+    // Wait for the auth check to finish before redirecting, otherwise a page
+    // refresh always bounces logged-in users back to the cart.
     useEffect(()=>{
-        if(!user){
+        if(!isUserLoading && !user){
+            setShowUserLogin(true)
             navigate('/cart')
         }
-    },[])
+    },[isUserLoading, user, navigate, setShowUserLogin])
 
     return (
         <div className='mt-16 pb-16'>
@@ -90,14 +98,14 @@ const AddAddress = () => {
                         </div>
 
                         <div className='grid grid-cols-2 gap-4'>
-                            <InputField handleChange={handleChange} address={address} name='zipcode' type="number" placeholder="Zip Code" />
+                            <InputField handleChange={handleChange} address={address} name='zipcode' type="text" placeholder="Zip Code" />
                             <InputField handleChange={handleChange} address={address} name='country' type="text" placeholder="Country" />
                         </div>
 
-                        <InputField handleChange={handleChange} address={address} name='phone' type="text" placeholder="Phone" />
+                        <InputField handleChange={handleChange} address={address} name='phone' type="tel" placeholder="Phone" />
 
-                        <button className='w-full mt-6 bg-primary text-white py-3 hover:bg-primary-dull transition cursor-pointer uppercase'>
-                            Save address
+                        <button disabled={saving} className='w-full mt-6 bg-primary text-white py-3 hover:bg-primary-dull transition cursor-pointer uppercase disabled:opacity-60'>
+                            {saving ? 'Saving...' : 'Save address'}
                         </button>
 
                     </form>

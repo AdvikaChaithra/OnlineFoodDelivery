@@ -8,20 +8,19 @@ const authUser = async (req, res, next) => {
         return res.json({ success: false, message: 'Not Authorized' });
     }
 
+    let tokenDecode;
     try {
-        const tokenDecode = jwt.verify(token, process.env.JWT_SECRET)
-        if (tokenDecode.id) {
-            req.userId = tokenDecode.id;
-
-        } else {
-            return res.json({ success: false, message: 'Not Authorized' });
-        }
-        next();
-
-
-    } catch (error) {
-        res.json({ success: false, message: error.message });
+        tokenDecode = jwt.verify(token, process.env.JWT_SECRET);
+    } catch {
+        return res.json({ success: false, message: 'Not Authorized' });
     }
+
+    if (!tokenDecode?.id) {
+        return res.json({ success: false, message: 'Not Authorized' });
+    }
+
+    req.userId = tokenDecode.id;
+    next();
 }
 
 export default authUser

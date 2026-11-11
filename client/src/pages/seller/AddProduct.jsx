@@ -6,7 +6,8 @@ import { useAppContext } from "../../context/AppContext";
 import toast from "react-hot-toast";
 
 const AddProduct = () => {
-  const { axios } = useAppContext();
+  const { axios, fetchProducts } = useAppContext();
+  const [loading, setLoading] = useState(false);
 
   const [files, setFiles] = useState([]);
   const [name, setName] = useState("");
@@ -25,13 +26,24 @@ const AddProduct = () => {
         return toast.error("Please select a category");
       }
 
+      if (!files.some(Boolean)) {
+        return toast.error("Please upload at least one product image");
+      }
+
+      if (Number(price) <= 0 || Number(offerPrice) <= 0) {
+        return toast.error("Prices must be greater than 0");
+      }
+
       if (Number(offerPrice) > Number(price)) {
         return toast.error("Offer price cannot be greater than product price");
       }
 
       const productData = {
         name,
-        description: description.split("\n"),
+        description: description
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean),
         category,
         price,
         offerPrice,
@@ -45,10 +57,12 @@ const AddProduct = () => {
         if (file) formData.append("images", file);
       });
 
+      setLoading(true);
       const { data } = await axios.post("/api/product/add", formData);
 
       if (data.success) {
         toast.success(data.message);
+        fetchProducts();
 
         setName("");
         setDescription("");
@@ -61,6 +75,8 @@ const AddProduct = () => {
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -91,6 +107,7 @@ const AddProduct = () => {
                       const updatedFiles = [...files];
                       updatedFiles[index] = e.target.files[0];
                       setFiles(updatedFiles);
+                      e.target.value = ""; // allow re-selecting the same file
                     }}
                   />
 
@@ -145,6 +162,7 @@ const AddProduct = () => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500/40 resize-none"
+            required
           />
         </div>
 
@@ -183,6 +201,8 @@ const AddProduct = () => {
             <input
               id="product-price"
               type="number"
+              min="0.01"
+              step="0.01"
               placeholder="0"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
@@ -199,6 +219,8 @@ const AddProduct = () => {
             <input
               id="offer-price"
               type="number"
+              min="0.01"
+              step="0.01"
               placeholder="0"
               value={offerPrice}
               onChange={(e) => setOfferPrice(e.target.value)}
@@ -210,8 +232,11 @@ const AddProduct = () => {
 
         {/* Submit */}
 
-        <button className="px-8 py-2.5 bg-primary text-white font-medium rounded cursor-pointer hover:bg-primary-dull transition">
-          ADD PRODUCT
+        <button
+          disabled={loading}
+          className="px-8 py-2.5 bg-primary text-white font-medium rounded cursor-pointer hover:bg-primary-dull transition disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {loading ? "ADDING..." : "ADD PRODUCT"}
         </button>
       </form>
     </div>

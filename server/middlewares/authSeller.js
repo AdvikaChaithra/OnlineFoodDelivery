@@ -8,19 +8,18 @@ const authSeller = async (req, res, next) => {
         return res.json({ success: false, message: 'Not Authorized' });
     }
 
+    let tokenDecode;
     try {
-        const tokenDecode = jwt.verify(sellerToken, process.env.JWT_SECRET)
-        if (tokenDecode.email === process.env.SELLER_EMAIL) {
-           // req.sellerEmail = tokenDecode.email;
-            next();
-
-        } else {
-            return res.json({ success: false, message: 'Not Authorized' });
-        }
-        
-    } catch (error) {
-        res.json({ success: false, message: error.message });
+        tokenDecode = jwt.verify(sellerToken, process.env.JWT_SECRET);
+    } catch {
+        return res.json({ success: false, message: 'Not Authorized' });
     }
+
+    if (!process.env.SELLER_EMAIL || tokenDecode?.email !== process.env.SELLER_EMAIL) {
+        return res.json({ success: false, message: 'Not Authorized' });
+    }
+
+    next();
 }
 
 export default authSeller;

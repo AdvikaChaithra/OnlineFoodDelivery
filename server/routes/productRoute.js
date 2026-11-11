@@ -16,7 +16,7 @@ const productRouter = express.Router();
 
 /* -------- ADD PRODUCT -------- */
 
-productRouter.post("/add", upload.array("images"), authSeller, addProduct);
+productRouter.post("/add", authSeller, upload.array("images", 4), addProduct);
 
 /* -------- GET ALL PRODUCTS -------- */
 
