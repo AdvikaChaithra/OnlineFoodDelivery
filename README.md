@@ -1,4 +1,4 @@
-<div align="center">
+
 
 # 🧺 FoodBasket
 
@@ -6,7 +6,7 @@
 
 A full-stack **MERN** e-commerce web app where customers browse fresh groceries, build a cart that follows them across devices, and pay with **Cash on Delivery** or **Stripe**. A separate **seller dashboard** manages the catalogue, stock and incoming orders.
 
-<<<<<<< HEAD
+
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)](https://vite.dev/)
@@ -39,7 +39,7 @@ A full-stack **MERN** e-commerce web app where customers browse fresh groceries,
 - [Contributing](#contributing)
 - [References and Acknowledgements](#references-and-acknowledgements)
 - [Author](#author)
->>>>>>> b6417d4e8ad9ce715c9daf355e7ac785d96f925b
+
 
 **[Features](#-features) · [Tech Stack](#-tech-stack) · [Getting Started](#-getting-started) · [API](#-api-reference) · [Deployment](#-deployment) · [Learning Guide](learning.md)**
 
@@ -626,7 +626,7 @@ For bugs, open an issue with steps to reproduce, the expected behaviour and scre
 
 ## 🙏 Acknowledgements
 
-<<<<<<< HEAD
+
 - [React](https://react.dev/) · [Vite](https://vite.dev/) · [React Router](https://reactrouter.com/) · [Tailwind CSS](https://tailwindcss.com/)
 - [Express](https://expressjs.com/) · [Mongoose](https://mongoosejs.com/) · [MongoDB Atlas](https://www.mongodb.com/atlas)
 - [Stripe Checkout and Webhooks](https://stripe.com/docs/payments/checkout) · [Cloudinary](https://cloudinary.com/documentation) · [Multer](https://github.com/expressjs/multer)
@@ -644,7 +644,7 @@ Released under the **MIT License**.
 ## 👩‍💻 Author
 =======
 ## Author
->>>>>>> b6417d4e8ad9ce715c9daf355e7ac785d96f925b
+
 
 **Advika**
 
